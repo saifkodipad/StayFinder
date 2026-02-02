@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Listing - StayFinder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        .listing-card {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        #clientAlert {
+            margin-bottom: 1.5rem;
+        }
+        .form-control.error {
+            border-color: #dc3545;
+        }
+        .form-control.success {
+            border-color: #198754;
+        }
+        #dropZone {
+            border: 2px dashed #ced4da;
+            border-radius: 0.375rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #dropZone:hover, #dropZone.drag-over {
+            border-color: #0d6efd;
+            background-color: rgba(13, 110, 253, 0.05);
+        }
+        #dropZone i {
+            font-size: 3rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+        .file-preview {
+            margin-top: 1rem;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+            background-color: #fff;
+        }
+        .file-item i {
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+        }
+        .file-item.image i {
+            color: #0d6efd;
+        }
+        .file-item.video i {
+            color: #6f42c1;
+        }
+        .file-info {
+            flex-grow: 1;
+        }
+        .file-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        .file-size {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+        .remove-file {
+            color: #dc3545;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+        .remove-file:hover {
+            color: #bb2d3b;
+        }
+        .character-count {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        .character-count.near-limit {
+            color: #ffc107;
+        }
+        .character-count.over-limit {
+            color: #dc3545;
+        }
+        .required::after {
+            content: " *";
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="listing-card card">
+            <div class="card-header bg-primary text-white text-center">
+                <h3 class="mb-0">Create a New Listing</h3>
+            </div>
+            <div class="card-body p-4">
+                <!-- Single alert container for client-side validation -->
+                <div id="clientAlert" style="display: none;"></div>
+                
+                <form action="/listings" method="POST" enctype="multipart/form-data" id="listingForm">
+                    <!-- Title -->
+                    <div class="mb-4">
+                        <label for="title" class="form-label required">Title</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="title" 
+                            name="title" 
+                            placeholder="Enter listing title"
+                            maxlength="100"
+                        >
+                        <div class="character-count" id="titleCount">0/100 characters</div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <label for="description" class="form-label required">Description</label>
+                        <textarea 
+                            class="form-control" 
+                            id="description" 
+                            name="description" 
+                            rows="4"
+                            placeholder="Describe your listing"
+                            maxlength="2000"
+                        ></textarea>
+                        <div class="character-count" id="descriptionCount">0/2000 characters</div>
+                    </div>
+                    
+                    <!-- Price -->
+                    <div class="mb-4">
+                        <label for="price" class="form-label required">Price ($)</label>
+                        <input 
+                            type="number" 
+                            class="form-control" 
+                            id="price" 
+                            name="price" 
+                            placeholder="Enter price per night"
+                            min="50"
+                            max="10000"
+                            step="0.01"
+                        >
+                        <div class="form-text">Price per night ($50 - $10,000)</div>
+                    </div>
+                    
+                    <!-- Location -->
+                    <div class="mb-4">
+                        <label for="location" class="form-label required">Location</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="location" 
+                            name="location" 
+                            placeholder="e.g., Barkas Hyderabad"
+                            maxlength="200"
+                        >
+                        <div class="character-count" id="locationCount">0/200 characters</div>
+                    </div>
+                    
+                    <!-- Country -->
+                    <div class="mb-4">
+                        <label for="country" class="form-label required">Country</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="country" 
+                            name="country" 
+                            placeholder="e.g., India"
+                            maxlength="100"
+                        >
+                        <div class="character-count" id="countryCount">0/100 characters</div>
+                    </div>
+                    
+                    <!-- Upload Files -->
+                    <div class="mb-4">
+                        <label class="form-label required">Upload Media Files</label>
+                        <div id="dropZone">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h5>Drag & Drop or Click to Upload</h5>
+                            <p class="text-muted mb-0">(Images and videos supported. At least one file required.)</p>
+                        </div>
+                        <input 
+                            type="file" 
+                            name="media"
+                            multiple
+                            accept="image/*,video/*"
+                            class="d-none"
+                            id="fileInput"
+                        >
+                        <div id="fileList" class="file-preview"></div>
+                    </div>
+                    
+                    <!-- Create Listing Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg py-3" id="submitBtn">
+                            Create Listing
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const listingForm = document.getElementById('listingForm');
+            const clientAlert = document.getElementById('clientAlert');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Get all form inputs
+            const titleInput = document.getElementById('title');
+            const descriptionInput = document.getElementById('description');
+            const priceInput = document.getElementById('price');
+            const locationInput = document.getElementById('location');
+            const countryInput = document.getElementById('country');
+            const fileInput = document.getElementById('fileInput');
+            const dropZone = document.getElementById('dropZone');
+            const fileList = document.getElementById('fileList');
+            
+            // Character counters
+            const titleCount = document.getElementById('titleCount');
+            const descriptionCount = document.getElementById('descriptionCount');
+            const locationCount = document.getElementById('locationCount');
+            const countryCount = document.getElementById('countryCount');
+            
+            // File tracking
+            let selectedFiles = [];
+            
+            // Character counter updates
+            function updateCharacterCount(input, counter, maxLength) {
+                const length = input.value.length;
+                counter.textContent = `${length}/${maxLength} characters`;
+                
+                if (length > maxLength * 0.9) {
+                    counter.className = 'character-count near-limit';
+                } else if (length > maxLength) {
+                    counter.className = 'character-count over-limit';
+                } else {
+                    counter.className = 'character-count';
+                }
+            }
+            
+            // Initialize character counters
+            titleInput.addEventListener('input', () => updateCharacterCount(titleInput, titleCount, 100));
+            descriptionInput.addEventListener('input', () => updateCharacterCount(descriptionInput, descriptionCount, 2000));
+            locationInput.addEventListener('input', () => updateCharacterCount(locationInput, locationCount, 200));
+            countryInput.addEventListener('input', () => updateCharacterCount(countryInput, countryCount, 100));
+            
+            // File upload handling
+            dropZone.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            // Drag and drop events
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            });
+            
+            dropZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+            });
+            
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                
+                if (e.dataTransfer.files.length > 0) {
+                    handleFiles(e.dataTransfer.files);
+                }
+            });
+            
+            fileInput.addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    handleFiles(this.files);
+                }
+            });
+            
+            function handleFiles(files) {
+                // Convert FileList to Array
+                const newFiles = Array.from(files);
+                
+                // Filter for only images and videos
+                const validFiles = newFiles.filter(file => 
+                    file.type.startsWith('image/') || file.type.startsWith('video/')
+                );
+                
+                // Add to selected files
+                selectedFiles = [...selectedFiles, ...validFiles];
+                
+                // Update file input
+                const dataTransfer = new DataTransfer();
+                selectedFiles.forEach(file => dataTransfer.items.add(file));
+                fileInput.files = dataTransfer.files;
+                
+                // Show file list
+                showFileList();
+                
+                // Clear any error alert when files are uploaded
+                if (clientAlert.style.display === 'block') {
+                    clientAlert.style.display = 'none';
+                    clientAlert.innerHTML = '';
+                    clientAlert.className = '';
+                }
+            }
+            
+            function showFileList() {
+                fileList.innerHTML = '';
+                
+                if (selectedFiles.length === 0) {
+                    fileList.innerHTML = '<div class="text-center text-muted py-3">No files selected</div>';
+                    return;
+                }
+                
+                selectedFiles.forEach((file, index) => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = `file-item ${file.type.startsWith('image/') ? 'image' : 'video'}`;
+                    
+                    const icon = file.type.startsWith('image/') ? 
+                        '<i class="fas fa-image"></i>' : 
+                        '<i class="fas fa-video"></i>';
+                    
+                    const size = (file.size / 1024 / 1024).toFixed(2);
+                    
+                    fileItem.innerHTML = `
+                        ${icon}
+                        <div class="file-info">
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">${size} MB</div>
+                        </div>
+                        <div class="remove-file" data-index="${index}">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    `;
+                    
+                    fileList.appendChild(fileItem);
+                });
+                
+                // Add remove functionality
+                document.querySelectorAll('.remove-file').forEach(button => {
+                    button.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const index = parseInt(this.getAttribute('data-index'));
+                        removeFile(index);
+                    });
+                });
+            }
+            
+            function removeFile(index) {
+                selectedFiles.splice(index, 1);
+                
+                // Update file input
+                const dataTransfer = new DataTransfer();
+                selectedFiles.forEach(file => dataTransfer.items.add(file));
+                fileInput.files = dataTransfer.files;
+                
+                // Update display
+                showFileList();
+            }
+            
+            // Initialize empty file list
+            showFileList();
+            
+            // Function to clear all field styling
+            function clearAllFieldStyling() {
+                [titleInput, descriptionInput, priceInput, locationInput, countryInput].forEach(input => {
+                    input.classList.remove('error', 'success');
+                });
+            }
+            
+            // Form submission handler
+            listingForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                // Clear previous client alert and field styling
+                clientAlert.style.display = 'none';
+                clientAlert.innerHTML = '';
+                clientAlert.className = '';
+                
+                // Clear all field styling
+                clearAllFieldStyling();
+                
+                // Get values
+                const title = titleInput.value.trim();
+                const description = descriptionInput.value.trim();
+                const priceStr = priceInput.value.trim();
+                const price = priceStr ? parseFloat(priceStr) : NaN;
+                const location = locationInput.value.trim();
+                const country = countryInput.value.trim();
+                
+                // Validation
+                const errors = [];
+                const errorFields = [];
+                
+                // Title validation
+                if (!title) {
+                    errors.push('Please enter a title');
+                    errorFields.push('title');
+                    titleInput.classList.add('error');
+                } else if (title.length < 5) {
+                    errors.push('Title must be at least 5 characters');
+                    errorFields.push('title');
+                    titleInput.classList.add('error');
+                } else if (title.length > 100) {
+                    errors.push('Title cannot exceed 100 characters');
+                    errorFields.push('title');
+                    titleInput.classList.add('error');
+                } else {
+                    titleInput.classList.add('success');
+                }
+                
+                // Description validation
+                if (!description) {
+                    errors.push('Please enter a description');
+                    errorFields.push('description');
+                    descriptionInput.classList.add('error');
+                } else if (description.length < 20) {
+                    errors.push('Description must be at least 20 characters');
+                    errorFields.push('description');
+                    descriptionInput.classList.add('error');
+                } else if (description.length > 2000) {
+                    errors.push('Description cannot exceed 2000 characters');
+                    errorFields.push('description');
+                    descriptionInput.classList.add('error');
+                } else {
+                    descriptionInput.classList.add('success');
+                }
+                
+                // Price validation
+                if (!priceStr) {
+                    errors.push('Please enter a price');
+                    errorFields.push('price');
+                    priceInput.classList.add('error');
+                } else if (isNaN(price)) {
+                    errors.push('Price must be a valid number');
+                    errorFields.push('price');
+                    priceInput.classList.add('error');
+                } else if (price < 50) {
+                    errors.push('Price must be at least $50');
+                    errorFields.push('price');
+                    priceInput.classList.add('error');
+                } else if (price > 10000) {
+                    errors.push('Price cannot exceed $10,000');
+                    errorFields.push('price');
+                    priceInput.classList.add('error');
+                } else {
+                    priceInput.classList.add('success');
+                }
+                
+                // Location validation
+                if (!location) {
+                    errors.push('Please enter a location');
+                    errorFields.push('location');
+                    locationInput.classList.add('error');
+                } else if (location.length < 4) {
+                    errors.push('Location must be at least 4 characters');
+                    errorFields.push('location');
+                    locationInput.classList.add('error');
+                } else if (location.length > 200) {
+                    errors.push('Location cannot exceed 200 characters');
+                    errorFields.push('location');
+                    locationInput.classList.add('error');
+                } else {
+                    locationInput.classList.add('success');
+                }
+                
+                // Country validation
+                if (!country) {
+                    errors.push('Please enter a country');
+                    errorFields.push('country');
+                    countryInput.classList.add('error');
+                } else if (country.length < 4) {
+                    errors.push('Country must be at least 4 characters');
+                    errorFields.push('country');
+                    countryInput.classList.add('error');
+                } else if (country.length > 100) {
+                    errors.push('Country cannot exceed 100 characters');
+                    errorFields.push('country');
+                    countryInput.classList.add('error');
+                } else {
+                    countryInput.classList.add('success');
+                }
+                
+                // File validation
+                if (selectedFiles.length === 0) {
+                    errors.push('Please upload at least one media file (image or video)');
+                    errorFields.push('media');
+                }
+                
+                // If there are errors, show them and prevent submission
+                if (errors.length > 0) {
+                    // Show errors in client alert
+                    clientAlert.className = 'alert alert-danger alert-dismissible fade show';
+                    clientAlert.innerHTML = `
+                        <strong>Please fix the following ${errors.length === 1 ? 'error' : 'errors'}:</strong>
+                        <ul class="mb-0 mt-2">
+                            ${errors.map(error => `<li>${error}</li>`).join('')}
+                        </ul>
+                        <button type="button" class="btn-close" id="closeErrorBtn" aria-label="Close"></button>
+                    `;
+                    clientAlert.style.display = 'block';
+                    
+                    // Add event listener to close button - HARD REFRESH PAGE
+                    document.getElementById('closeErrorBtn').addEventListener('click', function() {
+                        // Force hard refresh of the page
+                        window.location.reload(true);
+                    });
+                    
+                    // Focus on first error field
+                    if (errorFields.length > 0) {
+                        const firstErrorField = document.getElementById(errorFields[0]);
+                        if (firstErrorField) {
+                            firstErrorField.focus();
+                        }
+                    }
+                    
+                    return false;
+                }
+                
+                // If no errors, submit the form
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating Listing...';
+                
+                // Submit the form
+                listingForm.submit();
+            });
+            
+            // Clear alert when user starts typing in any field
+            [titleInput, descriptionInput, priceInput, locationInput, countryInput].forEach(input => {
+                input.addEventListener('input', function() {
+                    if (clientAlert.style.display === 'block') {
+                        clientAlert.style.display = 'none';
+                        clientAlert.innerHTML = '';
+                        clientAlert.className = '';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

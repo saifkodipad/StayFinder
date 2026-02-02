@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - StayFinder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 20px 0;
+        }
+        .register-card {
+            width: 100%;
+            max-width: 550px;
+            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .phone-input-group {
+            display: flex;
+            align-items: stretch;
+        }
+        .country-code {
+            flex: 0 0 80px;
+            background-color: #f8f9fa;
+            border: 1px solid #ced4da;
+            border-right: none;
+            border-radius: 0.375rem 0 0 0.375rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            color: #495057;
+        }
+        .phone-input {
+            flex: 1;
+            border-radius: 0 0.375rem 0.375rem 0;
+        }
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        #clientAlert {
+            margin-bottom: 1.5rem;
+        }
+        .password-match {
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .password-match.valid {
+            color: #198754;
+        }
+        .password-match.invalid {
+            color: #dc3545;
+        }
+        .form-control.error {
+            border-color: #dc3545;
+        }
+        .form-control.success {
+            border-color: #198754;
+        }
+        .required::after {
+            content: " *";
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="register-card card">
+            <div class="card-header bg-primary text-white text-center">
+                <h3 class="mb-0">Register</h3>
+            </div>
+            <div class="card-body p-4">
+                <!-- Single alert container for client-side validation -->
+                <div id="clientAlert" style="display: none;"></div>
+                
+                <form action="/register" method="POST" id="registerForm">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="firstName" class="form-label required">First Name</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="firstName" 
+                                name="firstName" 
+                                placeholder="Enter your first name"
+                            >
+                        </div>
+                        <div class="col-md-6">
+                            <label for="lastName" class="form-label required">Last Name</label>
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                id="lastName" 
+                                name="lastName" 
+                                placeholder="Enter your last name"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label required">Username</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="username" 
+                            name="username" 
+                            placeholder="Choose a username"
+                        >
+                        <div class="form-text">This will be your public display name</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label required">Email</label>
+                        <input 
+                            type="email" 
+                            class="form-control" 
+                            id="email" 
+                            name="email" 
+                            placeholder="you@example.com"
+                        >
+                    </div>
+                    
+                    <!-- Phone Number Field -->
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone Number (Optional)</label>
+                        <div class="phone-input-group">
+                            <div class="country-code">+91</div>
+                            <input 
+                                type="tel" 
+                                class="form-control phone-input" 
+                                id="phone" 
+                                name="phone" 
+                                placeholder="98765 43210"
+                            >
+                        </div>
+                        <div class="form-text">Enter 10-digit mobile number</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label required">Password</label>
+                        <input 
+                            type="password" 
+                            class="form-control" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Create a strong password"
+                        >
+                        <div id="passwordStrength" class="password-match"></div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label required">Confirm Password</label>
+                        <input 
+                            type="password" 
+                            class="form-control" 
+                            id="confirmPassword" 
+                            name="confirmPassword" 
+                            placeholder="Re-enter your password"
+                        >
+                        <div id="passwordMatch" class="password-match"></div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                            Create Account
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <p class="mb-0">Already have an account? <a href="/login">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerForm = document.getElementById('registerForm');
+            const clientAlert = document.getElementById('clientAlert');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Get all form inputs
+            const firstNameInput = document.getElementById('firstName');
+            const lastNameInput = document.getElementById('lastName');
+            const usernameInput = document.getElementById('username');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const passwordMatchDiv = document.getElementById('passwordMatch');
+            const passwordStrengthDiv = document.getElementById('passwordStrength');
+            
+            // Remove validation styling when user starts typing
+            function clearFieldStyling(input) {
+                input.classList.remove('error', 'success');
+            }
+            
+            // Phone number formatting
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                
+                // Limit to 10 digits
+                if (value.length > 10) {
+                    value = value.substring(0, 10);
+                }
+                
+                // Format: 12345 67890
+                if (value.length > 5) {
+                    value = value.substring(0, 5) + ' ' + value.substring(5);
+                }
+                
+                e.target.value = value;
+                clearFieldStyling(phoneInput);
+            });
+            
+            // Real-time password matching
+            function checkPasswordMatch() {
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                
+                if (confirmPassword.length === 0) {
+                    passwordMatchDiv.textContent = '';
+                    passwordMatchDiv.className = 'password-match';
+                    return;
+                }
+                
+                if (password === confirmPassword) {
+                    passwordMatchDiv.textContent = '✓ Passwords match';
+                    passwordMatchDiv.className = 'password-match valid';
+                    confirmPasswordInput.classList.remove('error');
+                    confirmPasswordInput.classList.add('success');
+                } else {
+                    passwordMatchDiv.textContent = '✗ Passwords do not match';
+                    passwordMatchDiv.className = 'password-match invalid';
+                    confirmPasswordInput.classList.remove('success');
+                    confirmPasswordInput.classList.add('error');
+                }
+            }
+            
+            // Password strength indicator
+            function checkPasswordStrength(password) {
+                let strength = 0;
+                let message = '';
+                let color = 'text-danger';
+                
+                if (password.length >= 6) strength++;
+                if (/[A-Z]/.test(password)) strength++;
+                if (/[0-9]/.test(password)) strength++;
+                if (/[^A-Za-z0-9]/.test(password)) strength++;
+                
+                if (password.length === 0) {
+                    message = '';
+                } else if (strength === 1) {
+                    message = 'Weak';
+                    color = 'text-danger';
+                } else if (strength === 2) {
+                    message = 'Fair';
+                    color = 'text-warning';
+                } else if (strength === 3) {
+                    message = 'Good';
+                    color = 'text-info';
+                } else if (strength >= 4) {
+                    message = 'Strong';
+                    color = 'text-success';
+                }
+                
+                return { message, color };
+            }
+            
+            // Event listeners for real-time feedback
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                const strength = checkPasswordStrength(password);
+                
+                if (strength.message) {
+                    passwordStrengthDiv.innerHTML = 
+                        `Password strength: <span class="${strength.color} fw-bold">${strength.message}</span>`;
+                } else {
+                    passwordStrengthDiv.innerHTML = '';
+                }
+                
+                checkPasswordMatch();
+                clearFieldStyling(passwordInput);
+            });
+            
+            confirmPasswordInput.addEventListener('input', function() {
+                checkPasswordMatch();
+                clearFieldStyling(confirmPasswordInput);
+            });
+            
+            // Add input listeners to clear styling for all fields
+            [firstNameInput, lastNameInput, usernameInput, emailInput].forEach(input => {
+                input.addEventListener('input', function() {
+                    clearFieldStyling(this);
+                });
+            });
+            
+            // Clear client alert when user starts typing
+            const allInputs = [
+                firstNameInput, lastNameInput, usernameInput, 
+                emailInput, phoneInput, passwordInput, confirmPasswordInput
+            ];
+            
+            allInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (clientAlert.style.display === 'block') {
+                        clientAlert.style.display = 'none';
+                        clientAlert.innerHTML = '';
+                        clientAlert.className = '';
+                    }
+                });
+            });
+            
+            // Form submission handler
+            registerForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                // Clear previous client alert and field styling
+                clientAlert.style.display = 'none';
+                clientAlert.innerHTML = '';
+                clientAlert.className = '';
+                
+                // Clear all field styling
+                allInputs.forEach(input => {
+                    input.classList.remove('error', 'success');
+                });
+                
+                // Get values
+                const firstName = firstNameInput.value.trim();
+                const lastName = lastNameInput.value.trim();
+                const username = usernameInput.value.trim();
+                const email = emailInput.value.trim();
+                const phone = phoneInput.value.replace(/\s+/g, ''); // Remove spaces
+                const password = passwordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                
+                // Validation
+                const errors = [];
+                const errorFields = [];
+                
+                // First Name validation
+                if (!firstName) {
+                    errors.push('Please enter your first name');
+                    errorFields.push('firstName');
+                    firstNameInput.classList.add('error');
+                } else if (firstName.length < 3) {
+                    errors.push('First name must be at least 3 characters');
+                    errorFields.push('firstName');
+                    firstNameInput.classList.add('error');
+                } else if (firstName.length > 50) {
+                    errors.push('First name cannot exceed 50 characters');
+                    errorFields.push('firstName');
+                    firstNameInput.classList.add('error');
+                } else {
+                    firstNameInput.classList.add('success');
+                }
+                
+                // Last Name validation
+                if (!lastName) {
+                    errors.push('Please enter your last name');
+                    errorFields.push('lastName');
+                    lastNameInput.classList.add('error');
+                } else if (lastName.length < 3) {
+                    errors.push('Last name must be at least 3 characters');
+                    errorFields.push('lastName');
+                    lastNameInput.classList.add('error');
+                } else if (lastName.length > 50) {
+                    errors.push('Last name cannot exceed 50 characters');
+                    errorFields.push('lastName');
+                    lastNameInput.classList.add('error');
+                } else {
+                    lastNameInput.classList.add('success');
+                }
+                
+                // Username validation
+                if (!username) {
+                    errors.push('Please choose a username');
+                    errorFields.push('username');
+                    usernameInput.classList.add('error');
+                } else if (username.length < 3) {
+                    errors.push('Username must be at least 3 characters');
+                    errorFields.push('username');
+                    usernameInput.classList.add('error');
+                } else if (username.length > 30) {
+                    errors.push('Username cannot exceed 30 characters');
+                    errorFields.push('username');
+                    usernameInput.classList.add('error');
+                } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+                    errors.push('Username can only contain letters, numbers, and underscores');
+                    errorFields.push('username');
+                    usernameInput.classList.add('error');
+                } else {
+                    usernameInput.classList.add('success');
+                }
+                
+                // Email validation
+                if (!email) {
+                    errors.push('Please enter your email address');
+                    errorFields.push('email');
+                    emailInput.classList.add('error');
+                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    errors.push('Please enter a valid email address');
+                    errorFields.push('email');
+                    emailInput.classList.add('error');
+                } else {
+                    emailInput.classList.add('success');
+                }
+                
+                // Phone validation (optional)
+                if (phone && !/^[0-9]{10}$/.test(phone)) {
+                    errors.push('Phone number must be exactly 10 digits');
+                    errorFields.push('phone');
+                    phoneInput.classList.add('error');
+                } else if (phone) {
+                    phoneInput.classList.add('success');
+                }
+                
+                // Password validation
+                if (!password) {
+                    errors.push('Please enter a password');
+                    errorFields.push('password');
+                    passwordInput.classList.add('error');
+                } else if (password.length < 6) {
+                    errors.push('Password must be at least 6 characters');
+                    errorFields.push('password');
+                    passwordInput.classList.add('error');
+                } else {
+                    passwordInput.classList.add('success');
+                }
+                
+                // Confirm Password validation
+                if (!confirmPassword) {
+                    errors.push('Please confirm your password');
+                    errorFields.push('confirmPassword');
+                    confirmPasswordInput.classList.add('error');
+                } else if (password !== confirmPassword) {
+                    errors.push('Passwords do not match');
+                    errorFields.push('confirmPassword');
+                    confirmPasswordInput.classList.add('error');
+                } else {
+                    confirmPasswordInput.classList.add('success');
+                }
+                
+                // If there are errors, show them and prevent submission
+                if (errors.length > 0) {
+                    // Show errors in client alert
+                    clientAlert.className = 'alert alert-danger alert-dismissible fade show';
+                    clientAlert.innerHTML = `
+                        <strong>Please fix the following ${errors.length === 1 ? 'error' : 'errors'}:</strong>
+                        <ul class="mb-0 mt-2">
+                            ${errors.map(error => `<li>${error}</li>`).join('')}
+                        </ul>
+                        <button type="button" class="btn-close" id="closeErrorBtn" aria-label="Close"></button>
+                    `;
+                    clientAlert.style.display = 'block';
+                    
+                    // Add event listener to close button - HARD REFRESH PAGE
+                    document.getElementById('closeErrorBtn').addEventListener('click', function() {
+                        // Force hard refresh of the page
+                        window.location.reload(true);
+                    });
+                    
+                    // Focus on first error field
+                    if (errorFields.length > 0) {
+                        const firstErrorField = document.getElementById(errorFields[0]);
+                        if (firstErrorField) {
+                            firstErrorField.focus();
+                        }
+                    }
+                    
+                    return false;
+                }
+                
+                // If no errors, submit the form
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating Account...';
+                
+                // Submit the form
+                registerForm.submit();
+            });
+        });
+    </script>
+</body>
+</html>

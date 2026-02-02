@@ -1,0 +1,387 @@
+<style>
+  /* Base Style for Minimalist Footer - Matching Screenshot */
+  .footer-clean {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #FFFFFF;
+    border-top: 1px solid #F0F0F0;
+    padding: 40px 60px;
+    width: 100%;
+  }
+
+  .f-row {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  /* Left Column - Brand & Contact (Exactly like screenshot) */
+  .f-left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 0 0 30%;
+  }
+
+  .f-brand-logo {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+  }
+
+  .f-brand-logo span {
+    color: #FF385C;
+  }
+
+  .f-contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .f-email {
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 2px;
+  }
+
+  .f-email::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: #FF385C;
+    transition: width 0.3s ease;
+  }
+
+  .f-email:hover {
+    color: #FF385C;
+  }
+
+  .f-email:hover::after {
+    width: 100%;
+  }
+
+  .f-cvr {
+    font-size: 11px;
+    font-weight: 500;
+    color: #999;
+    letter-spacing: 0.02em;
+  }
+
+  /* Middle Column - Links (Exactly like screenshot) */
+  .f-middle-column {
+    display: flex;
+    gap: 60px;
+    flex: 0 0 45%;
+  }
+
+  .f-link-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .f-column-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: #FF385C;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 4px;
+  }
+
+  .f-link {
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    line-height: 1.4;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 2px;
+  }
+
+  .f-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: #FF385C;
+    transition: width 0.3s ease;
+  }
+
+  .f-link:hover {
+    color: #FF385C;
+  }
+
+  .f-link:hover::after {
+    width: 100%;
+  }
+
+  /* Active/Clicked state */
+  .f-link:active::after,
+  .f-link.active::after {
+    width: 100%;
+    background-color: #FF385C;
+  }
+
+  /* Right Column - Social (Exactly like screenshot) */
+  .f-right-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 16px;
+    flex: 0 0 25%;
+  }
+
+  .f-social-links {
+    display: flex;
+    gap: 16px;
+  }
+
+  .f-social-link {
+    color: #666;
+    font-size: 18px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 4px;
+  }
+
+  .f-social-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: #FF385C;
+    transition: width 0.3s ease;
+  }
+
+  .f-social-link:hover {
+    color: #FF385C;
+    transform: translateY(-2px);
+  }
+
+  .f-social-link:hover::after {
+    width: 100%;
+  }
+
+  /* Active/Clicked state for social icons */
+  .f-social-link:active::after,
+  .f-social-link.active::after {
+    width: 100%;
+    background-color: #FF385C;
+  }
+
+  /* Keep underline when focused for accessibility */
+  .f-link:focus::after,
+  .f-email:focus::after,
+  .f-social-link:focus::after {
+    width: 100%;
+  }
+
+  /* Copyright Section (Exactly like screenshot) */
+  .f-copyright {
+    width: 100%;
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #F0F0F0;
+  }
+
+  .copyright-text {
+    font-size: 11px;
+    font-weight: 500;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .footer-clean {
+      padding: 40px;
+    }
+    
+    .f-row {
+      flex-direction: column;
+      gap: 40px;
+    }
+    
+    .f-left-column,
+    .f-middle-column,
+    .f-right-column {
+      width: 100%;
+    }
+    
+    .f-middle-column {
+      justify-content: space-between;
+    }
+    
+    .f-right-column {
+      align-items: flex-start;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .footer-clean {
+      padding: 32px 24px;
+    }
+    
+    .f-middle-column {
+      flex-direction: column;
+      gap: 32px;
+    }
+    
+    .f-link-column {
+      gap: 12px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .footer-clean {
+      padding: 24px 20px;
+    }
+    
+    .f-brand-logo {
+      font-size: 20px;
+    }
+    
+    .f-email {
+      font-size: 12px;
+    }
+    
+    .f-link {
+      font-size: 12px;
+    }
+    
+    .copyright-text {
+      font-size: 10px;
+    }
+  }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<footer class="footer-clean">
+  <div class="f-row">
+    
+    <!-- Left Column: Brand & Contact -->
+    <div class="f-left-column">
+      <div class="f-brand-logo">
+        <span>S</span>tayFinder
+      </div>
+      <div class="f-contact-info">
+        <a href="mailto:rahamansaif029@gmail.com" class="f-email">
+          rahamansaif029@gmail.com
+        </a>
+        <div class="f-cvr">
+          CVR: 43937790
+        </div>
+      </div>
+    </div>
+
+    <!-- Middle Column: Links -->
+    <div class="f-middle-column">
+      <!-- Our Services -->
+      <div class="f-link-column">
+        <div class="f-column-title">Our Services</div>
+        <a href="/listings" class="f-link">Featured Stays</a>
+        <a href="/listings/new" class="f-link">Host Your Space</a>
+        <a href="/listings?premium=true" class="f-link">Premium Collection</a>
+      </div>
+      
+      <!-- About Us -->
+      <div class="f-link-column">
+        <div class="f-column-title">About Us</div>
+        <a href="/about" class="f-link">Our Story</a>
+        <a href="/team" class="f-link">The Team</a>
+        <a href="/careers" class="f-link">Careers</a>
+      </div>
+      
+      <!-- Quick Links -->
+      <div class="f-link-column">
+        <div class="f-column-title">Quick Links</div>
+        <a href="/pricing" class="f-link">Pricing</a>
+        <a href="#contact" class="f-link">Contact</a>
+        <a href="/faq" class="f-link">FAQ</a>
+      </div>
+    </div>
+
+    <!-- Right Column: Social -->
+    <div class="f-right-column">
+      <div class="f-social-links">
+        <a href="https://instagram.saifk.xyz" target="_blank" class="f-social-link" aria-label="Instagram">
+          <i class="fa-brands fa-instagram"></i>
+        </a>
+        <a href="https://x.saifk.xyz" target="_blank" class="f-social-link" aria-label="Twitter">
+          <i class="fa-brands fa-x-twitter"></i>
+        </a>
+        <a href="https://linkedin.saifk.xyz" target="_blank" class="f-social-link" aria-label="LinkedIn">
+          <i class="fa-brands fa-linkedin"></i>
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Copyright -->
+  <div class="f-copyright">
+    <div class="copyright-text">
+      Copyright ©2024 StayFinder. All Rights Reserved.
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Add underline on click functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const allLinks = document.querySelectorAll('.f-link, .f-email, .f-social-link');
+    
+    allLinks.forEach(link => {
+      // Remove active class from all links when clicking elsewhere
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.f-link') && !e.target.closest('.f-email') && !e.target.closest('.f-social-link')) {
+          allLinks.forEach(l => l.classList.remove('active'));
+        }
+      });
+      
+      // Add active class on click
+      link.addEventListener('click', function(e) {
+        // For internal links, keep the underline active
+        if (this.href && !this.target) {
+          allLinks.forEach(l => l.classList.remove('active'));
+          this.classList.add('active');
+        }
+        // For external links (target="_blank"), don't keep underline
+        // The underline will show during hover/click but won't stay
+      });
+      
+      // Accessibility: Add underline on focus
+      link.addEventListener('focus', function() {
+        this.classList.add('active');
+      });
+      
+      link.addEventListener('blur', function() {
+        this.classList.remove('active');
+      });
+    });
+  });
+</script>

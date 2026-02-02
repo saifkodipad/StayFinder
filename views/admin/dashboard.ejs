@@ -1,0 +1,274 @@
+
+
+<div class="min-h-screen bg-gray-100">
+  <!-- Admin Header -->
+  <div class="bg-primary text-white">
+    <div class="container px-4 py-6">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="h2 mb-1">Admin Dashboard</h1>
+          <p class="mb-0 opacity-75">Manage your StayFinder platform</p>
+        </div>
+        <div class="text-end">
+          <p class="mb-1">Welcome, <strong><%= currentUser.firstName %> <%= currentUser.lastName %></strong></p>
+          <p class="mb-0 small opacity-75">Last login: <%= currentUser.lastLogin ? new Date(currentUser.lastLogin).toLocaleString() : 'Never' %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flash Messages -->
+  <% if(success && success.length > 0) { %>
+    <div class="container mt-3">
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <%= success %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    </div>
+  <% } %>
+  
+  <% if(error && error.length > 0) { %>
+    <div class="container mt-3">
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- Main Content -->
+  <div class="container py-4">
+    
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-muted mb-2">Total Users</h6>
+                <h2 class="mb-0"><%= allUsers.length %></h2>
+              </div>
+              <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                <i class="fas fa-users fa-2x text-primary"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-muted mb-2">Total Listings</h6>
+                <h2 class="mb-0"><%= allListings.length %></h2>
+              </div>
+              <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                <i class="fas fa-home fa-2x text-success"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-muted mb-2">Admins</h6>
+                <h2 class="mb-0"><%= allUsers.filter(u => u.role === 'admin').length %></h2>
+              </div>
+              <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+                <i class="fas fa-crown fa-2x text-warning"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Quick Actions</h5>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="/admin/manageUsers" class="btn btn-outline-primary">
+            <i class="fas fa-user me-2"></i>Manage Users
+          </a>
+          <a href="/listings" class="btn btn-outline-success">
+            <i class="fas fa-home me-2"></i>Browse Listings
+          </a>
+          <a href="/listings/new" class="btn btn-outline-info">
+            <i class="fas fa-plus me-2"></i>Create Listing
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Recent Users</h5>
+        <a href="/admin/users" class="btn btn-sm btn-link">View all →</a>
+      </div>
+      <div class="card-body p-0">
+        <% if (allUsers && allUsers.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>User</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% allUsers.slice(0, 5).forEach(user => { %>
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                          <div class="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center">
+                            <span class="text-muted fw-bold"><%= user.username.charAt(0).toUpperCase() %></span>
+                          </div>
+                        </div>
+                        <div class="flex-grow-1 ms-2">
+                          <span class="fw-medium"><%= user.username %></span><br>
+                          <small class="text-muted"><%= user.firstName %> <%= user.lastName %></small>
+                        </div>
+                      </div>
+                    </td>
+                    <td><%= user.email %></td>
+                    <td>
+                      <% if (user.role === 'admin') { %>
+                        <span class="badge bg-warning">Admin</span>
+                      <% } else { %>
+                        <span class="badge bg-secondary">User</span>
+                      <% } %>
+                    </td>
+                    <td><%= user.createdAt.toLocaleDateString() %></td>
+                    <td>
+                      <% if (currentUser._id.toString() !== user._id.toString()) { %>
+                        <div class="btn-group btn-group-sm">
+                          <% if (user.role !== 'admin') { %>
+                            <form action="/admin/users/<%= user._id %>/make-admin" method="POST" class="d-inline">
+                              <button type="submit" onclick="return confirm('Make this user an admin?')" 
+                                class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-crown"></i>
+                              </button>
+                            </form>
+                          <% } %>
+                          <form action="/admin/users/<%= user._id %>?_method=DELETE" method="POST" class="d-inline">
+                            <button type="submit" onclick="return confirm('Delete this user?')" 
+                              class="btn btn-outline-danger btn-sm">
+                              <i class="fas fa-trash"></i>
+                            </button>
+                          </form>
+                        </div>
+                      <% } else { %>
+                        <span class="text-muted">Current User</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="text-center py-5">
+            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No users found</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Recent Listings -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Recent Listings</h5>
+        <a href="/listings" class="btn btn-sm btn-link">View all →</a>
+      </div>
+      <div class="card-body p-0">
+        <% if (allListings && allListings.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Title</th>
+                  <th>Location</th>
+                  <th>Price</th>
+                  <th>Owner</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% allListings.slice(0, 5).forEach(listing => { %>
+                  <tr>
+                    <td class="fw-medium"><%= listing.title %></td>
+                    <td><%= listing.location || 'Not specified' %></td>
+                    <td class="fw-bold text-success">₹<%= listing.price ? listing.price.toLocaleString('en-IN') : '0' %></td>
+                    <td>
+                      <% if (listing.host && listing.host.username) { %>
+                        <%= listing.host.username %>
+                      <% } else if (listing.host && listing.host.email) { %>
+                        <%= listing.host.email.split('@')[0] %>
+                      <% } else { %>
+                        <span class="text-muted">Unknown</span>
+                      <% } %>
+                    </td>
+                    <td><%= listing.createdAt.toLocaleDateString() %></td>
+                    <td>
+                      <div class="btn-group btn-group-sm">
+                        <a href="/listings/<%= listing._id %>" class="btn btn-outline-primary btn-sm">
+                          <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="/listings/<%= listing._id %>/edit" class="btn btn-outline-success btn-sm">
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <form action="/admin/listings/<%= listing._id %>?_method=DELETE" method="POST" class="d-inline">
+                          <button type="submit" onclick="return confirm('Delete this listing?')" 
+                            class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="text-center py-5">
+            <i class="fas fa-home fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No listings found</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Add Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<style>
+  .avatar-sm {
+    width: 36px;
+    height: 36px;
+  }
+  .bg-primary {
+    background-color: #0d6efd !important;
+  }
+  .text-primary {
+    color: #0d6efd !important;
+  }
+</style>

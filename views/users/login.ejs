@@ -1,0 +1,129 @@
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card login-card">
+            <div class="card-header bg-primary text-white text-center">
+                <h3 class="mb-0">Login</h3>
+            </div>
+            <div class="card-body p-4">
+                <!-- Single alert container for client-side validation -->
+                <div id="clientAlert" style="display: none;"></div>
+                
+                <form id="loginForm" action="/login" method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username or Email</label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="username" 
+                            name="username" 
+                            placeholder="Enter username or email"
+                            autocomplete="username"
+                        >
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input 
+                            type="password" 
+                            class="form-control" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Enter password"
+                            autocomplete="current-password"
+                        >
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <p class="mb-0">Not registered? <a href="/register">Create an account</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const clientAlert = document.getElementById('clientAlert');
+        
+        // Simple validation on form submit
+        loginForm.addEventListener('submit', function(event) {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            
+            // Clear previous client alert
+            clientAlert.style.display = 'none';
+            clientAlert.innerHTML = '';
+            clientAlert.className = '';
+            
+            let errorMessage = '';
+            
+            // Check if fields are empty
+            if (!username && !password) {
+                errorMessage = 'Both username and password are required';
+            } else if (!username) {
+                errorMessage = 'Username or email is required';
+            } else if (!password) {
+                errorMessage = 'Password is required';
+            }
+            
+            // If there's an error, show it and prevent submission
+            if (errorMessage) {
+                event.preventDefault();
+                
+                // Show error in client alert
+                clientAlert.className = 'alert alert-danger alert-dismissible fade show d-flex align-items-center';
+                clientAlert.innerHTML = `
+                    <i class="fas fa-exclamation-circle me-2 fs-5"></i>
+                    <div class="flex-grow-1">${errorMessage}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                clientAlert.style.display = 'block';
+                
+                // Auto dismiss after 5 seconds
+                setTimeout(() => {
+                    if (clientAlert.style.display === 'block') {
+                        const bsAlert = new bootstrap.Alert(clientAlert);
+                        bsAlert.close();
+                    }
+                }, 5000);
+                
+                return false;
+            }
+            
+            // If no errors, form will submit normally
+            // Show loading state
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Logging in...';
+        });
+        
+        // Clear client alert when user starts typing
+        usernameInput.addEventListener('input', function() {
+            if (clientAlert.style.display === 'block') {
+                clientAlert.style.display = 'none';
+            }
+        });
+        
+        passwordInput.addEventListener('input', function() {
+            if (clientAlert.style.display === 'block') {
+                clientAlert.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+<style>
+    .login-card {
+        margin-top: 2rem;
+    }
+    
+    #clientAlert {
+        margin-bottom: 1.5rem;
+    }
+</style>
