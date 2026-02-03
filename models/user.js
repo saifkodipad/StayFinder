@@ -30,7 +30,12 @@ const userSchema = new mongoose.Schema({
   phone: {
     type: String,
     trim: true,
-    default: ""
+    default: "9898982434" // Default value for primary phone
+  },
+  alternatePhone: {  // NEW: Second phone number field
+    type: String,
+    trim: true,
+    default: "9876548234" // Default value for alternate phone
   },
   password: {
     type: String,

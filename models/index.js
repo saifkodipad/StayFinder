@@ -8,4 +8,4 @@ module.exports = {
   Listing,
   Review,
   Media
-};
+}; 1    

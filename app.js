@@ -8,6 +8,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcrypt');
 const MongoStore = require('connect-mongo');
 const cookieParser = require('cookie-parser');
+const {listingSchema} = require("./schemaValidation")
 const nodemailer = require('nodemailer');
 const methodOverride = require('method-override');
 const expressLayouts = require('express-ejs-layouts');
@@ -38,36 +39,36 @@ mongoose.connect(mongoURI)
     console.log('💡 Tip: Make sure MongoDB is running (run "mongod" in terminal)');
 });
 
-// ==================== 7-DAY SESSION CONFIGURATION ====================
-app.use(cookieParser());
+const sessionSecret = process.env.SESSION_SECRET ||'your-cookie-secret-key'
 
-// FALLBACK SESSION CONFIGURATION - Will work 100%
-let sessionConfig = {
-    secret: process.env.SESSION_SECRET || 'your-secret-key-change-this-for-production',
+// ==================== COOKIE-BASED SESSION CONFIGURATION ====================
+app.use(cookieParser(process.env.COOKIE_SECRET || 'your-cookie-secret-key'));
+
+app.use(session({
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI,
+        ttl: 7*24 * 60 * 60
+    }),
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax'
+        maxAge: 7*24 * 60 * 60 * 1000,
+        httpOnly: true
     }
+}));
+
+
+//SCHEMA VALIDATION MIDDLEWARE
+const validateListing = (req, res, next) => {
+  const { error } = listingSchema.validate(req.body, { abortEarly: false });
+  if (error) {
+    const errorMessages = error.details.map(detail => detail.message).join(', ');
+    req.session.error = `Validation error: ${errorMessages}`;
+    return res.redirect(req.headers.referer || '/listings/new');
+  }
+  next();
 };
-
-// Try to use MongoDB store, fallback to memory store if it fails
-try {
-    const MongoStore = require('connect-mongo');
-    sessionConfig.store = MongoStore.create({
-        mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/StayFinder',
-        ttl: 7 * 24 * 60 * 60
-    });
-    console.log('✅ Sessions stored in MongoDB');
-} catch (err) {
-    console.log('⚠️  Using memory store for sessions (not recommended for production)');
-    // Memory store (temporary - will lose sessions on server restart)
-}
-
-app.use(session(sessionConfig));
 
 // ==================== MULTER CONFIGURATION ====================
 const storage = multer.diskStorage({
@@ -198,11 +199,12 @@ app.get('/register', (req, res) => {
 });
 
 // Register - POST - SIMPLIFIED
+// Register - POST - SIMPLIFIED
 app.post('/register', async (req, res) => {
     try {
         console.log('Registration attempt:', req.body);
         
-        const { firstName, lastName, username, email, password, phone } = req.body;
+        const { firstName, lastName, username, email, password, phone, alternatePhone } = req.body;
         
         // Check if user already exists
         const existingUser = await User.findOne({ 
@@ -217,10 +219,15 @@ app.post('/register', async (req, res) => {
             });
         }
         
-        // Clean phone number
+        // Clean phone numbers
         let cleanedPhone = '';
         if (phone && phone.trim()) {
             cleanedPhone = phone.replace(/\D/g, '');
+        }
+        
+        let cleanedAlternatePhone = '';
+        if (alternatePhone && alternatePhone.trim()) {
+            cleanedAlternatePhone = alternatePhone.replace(/\D/g, '');
         }
         
         // Create new user
@@ -231,6 +238,7 @@ app.post('/register', async (req, res) => {
             email: email.toLowerCase(),
             password,
             phone: cleanedPhone,
+            alternatePhone: cleanedAlternatePhone, // NEW: Add alternate phone
             role: 'user'
         });
         
@@ -272,6 +280,7 @@ app.get('/login', (req, res) => {
 });
 
 // Login - POST
+// Login - POST (updated to demonstrate session storage)
 app.post('/login', (req, res, next) => {
     passport.authenticate('local', async (err, user, info) => {
         if (err) {
@@ -302,7 +311,24 @@ app.post('/login', (req, res, next) => {
             }
             
             try {
-                // Update lastLogin
+                // Store additional user info in session
+                req.session.userInfo = {
+                    id: user._id,
+                    username: user.username,
+                    firstName: user.firstName,
+                    email: user.email,
+                    role: user.role,
+                    loginTime: new Date()
+                };
+                
+                // Set a cookie to track login time
+                res.cookie('last_login_time', new Date().toISOString(), {
+                    maxAge: 7 * 24 * 60 * 60 * 1000,
+                    httpOnly: true,
+                    signed: true
+                });
+                
+                // Update lastLogin in database
                 await User.findByIdAndUpdate(
                     user._id,
                     { lastLogin: new Date() },
@@ -475,7 +501,7 @@ app.get('/listings/new', isLoggedIn, (req, res) => {
 });
 
 // Create listing - POST - SIMPLIFIED
-app.post('/listings', isLoggedIn, upload.array('media', 12), async (req, res) => {
+app.post('/listings', isLoggedIn, upload.array('media', 12),validateListing, async (req, res) => {
     try {
         console.log('Request body:', req.body);
         console.log('Files:', req.files);
@@ -546,7 +572,7 @@ app.get('/listings/:id', async (req, res) => {
 });
 
 // Edit listing page
-app.get('/listings/:id/edit', isLoggedIn, async (req, res) => {
+app.get('/listings/:id/edit', isLoggedIn,validateListing,async (req, res) => {
     try {
         const listing = await Listing.findById(req.params.id);
         if (!listing) {

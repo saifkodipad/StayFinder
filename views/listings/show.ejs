@@ -613,6 +613,115 @@
             $<%= listing.price.toLocaleString("en-US") %>
             <span>/ night</span>
         </div>
+        <!-- BOOKING CALL SECTION (NEW) -->
+<div class="booking-call-section mb-8" style="
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 25px;
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+">
+    <h3 style="
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    ">
+        <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+        </svg>
+        Contact for Booking
+    </h3>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+        <% if (listing.owner && listing.owner.phone) { %>
+            <div class="contact-info" style="
+                background: rgba(255, 255, 255, 0.1);
+                padding: 15px;
+                border-radius: 8px;
+                backdrop-filter: blur(10px);
+            ">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
+                    <span style="font-weight: 600;">Primary Phone:</span>
+                </div>
+                <a href="tel:<%= listing.owner.phone %>" 
+                   style="
+                        color: white;
+                        text-decoration: none;
+                        font-size: 18px;
+                        font-weight: 700;
+                        display: block;
+                        background: rgba(255, 255, 255, 0.15);
+                        padding: 10px 15px;
+                        border-radius: 6px;
+                        text-align: center;
+                        transition: all 0.3s;
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                   "
+                   onmouseover="this.style.background='rgba(255, 255, 255, 0.25)';"
+                   onmouseout="this.style.background='rgba(255, 255, 255, 0.15)';"
+                >
+                    +91 <%= listing.owner.phone.replace(/(\d{5})(\d{5})/, '$1 $2') %>
+                </a>
+            </div>
+        <% } %>
+        
+        <% if (listing.owner && listing.owner.alternatePhone) { %>
+            <div class="contact-info" style="
+                background: rgba(255, 255, 255, 0.1);
+                padding: 15px;
+                border-radius: 8px;
+                backdrop-filter: blur(10px);
+            ">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
+                    <span style="font-weight: 600;">Alternate Phone:</span>
+                </div>
+                <a href="tel:<%= listing.owner.alternatePhone %>" 
+                   style="
+                        color: white;
+                        text-decoration: none;
+                        font-size: 18px;
+                        font-weight: 700;
+                        display: block;
+                        background: rgba(255, 255, 255, 0.15);
+                        padding: 10px 15px;
+                        border-radius: 6px;
+                        text-align: center;
+                        transition: all 0.3s;
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                   "
+                   onmouseover="this.style.background='rgba(255, 255, 255, 0.25)';"
+                   onmouseout="this.style.background='rgba(255, 255, 255, 0.15)';"
+                >
+                    +91 <%= listing.owner.alternatePhone.replace(/(\d{5})(\d{5})/, '$1 $2') %>
+                </a>
+            </div>
+        <% } %>
+    </div>
+    
+    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.2);">
+        <p style="
+            font-size: 14px;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        ">
+            <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Contact the property owner directly for booking inquiries. Calls are preferred for immediate response.</span>
+        </p>
+    </div>
+</div>
 
         <!-- DESCRIPTION -->
         <div class="mb-10">

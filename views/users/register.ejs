@@ -126,9 +126,9 @@
                         >
                     </div>
                     
-                    <!-- Phone Number Field -->
+                    <!-- Primary Phone Number Field -->
                     <div class="mb-3">
-                        <label for="phone" class="form-label">Phone Number (Optional)</label>
+                        <label for="phone" class="form-label">Primary Phone Number</label>
                         <div class="phone-input-group">
                             <div class="country-code">+91</div>
                             <input 
@@ -140,6 +140,22 @@
                             >
                         </div>
                         <div class="form-text">Enter 10-digit mobile number</div>
+                    </div>
+                    
+                    <!-- Alternate Phone Number Field (NEW) -->
+                    <div class="mb-3">
+                        <label for="alternatePhone" class="form-label">Alternate Phone Number</label>
+                        <div class="phone-input-group">
+                            <div class="country-code">+91</div>
+                            <input 
+                                type="tel" 
+                                class="form-control phone-input" 
+                                id="alternatePhone" 
+                                name="alternatePhone" 
+                                placeholder="98765 43211"
+                            >
+                        </div>
+                        <div class="form-text">Enter 10-digit alternate mobile number</div>
                     </div>
                     
                     <div class="mb-3">
@@ -193,6 +209,7 @@
             const usernameInput = document.getElementById('username');
             const emailInput = document.getElementById('email');
             const phoneInput = document.getElementById('phone');
+            const alternatePhoneInput = document.getElementById('alternatePhone'); // NEW
             const passwordInput = document.getElementById('password');
             const confirmPasswordInput = document.getElementById('confirmPassword');
             const passwordMatchDiv = document.getElementById('passwordMatch');
@@ -203,9 +220,9 @@
                 input.classList.remove('error', 'success');
             }
             
-            // Phone number formatting
-            phoneInput.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
+            // Phone number formatting function
+            function formatPhoneInput(input) {
+                let value = input.value.replace(/\D/g, '');
                 
                 // Limit to 10 digits
                 if (value.length > 10) {
@@ -217,8 +234,18 @@
                     value = value.substring(0, 5) + ' ' + value.substring(5);
                 }
                 
-                e.target.value = value;
-                clearFieldStyling(phoneInput);
+                input.value = value;
+                clearFieldStyling(input);
+            }
+            
+            // Phone number formatting for both phone inputs
+            phoneInput.addEventListener('input', function(e) {
+                formatPhoneInput(this);
+            });
+            
+            // NEW: Formatting for alternate phone input
+            alternatePhoneInput.addEventListener('input', function(e) {
+                formatPhoneInput(this);
             });
             
             // Real-time password matching
@@ -297,7 +324,7 @@
             });
             
             // Add input listeners to clear styling for all fields
-            [firstNameInput, lastNameInput, usernameInput, emailInput].forEach(input => {
+            [firstNameInput, lastNameInput, usernameInput, emailInput, phoneInput, alternatePhoneInput].forEach(input => {
                 input.addEventListener('input', function() {
                     clearFieldStyling(this);
                 });
@@ -306,7 +333,8 @@
             // Clear client alert when user starts typing
             const allInputs = [
                 firstNameInput, lastNameInput, usernameInput, 
-                emailInput, phoneInput, passwordInput, confirmPasswordInput
+                emailInput, phoneInput, alternatePhoneInput, // UPDATED
+                passwordInput, confirmPasswordInput
             ];
             
             allInputs.forEach(input => {
@@ -339,6 +367,7 @@
                 const username = usernameInput.value.trim();
                 const email = emailInput.value.trim();
                 const phone = phoneInput.value.replace(/\s+/g, ''); // Remove spaces
+                const alternatePhone = alternatePhoneInput.value.replace(/\s+/g, ''); // NEW: Remove spaces
                 const password = passwordInput.value;
                 const confirmPassword = confirmPasswordInput.value;
                 
@@ -416,11 +445,20 @@
                 
                 // Phone validation (optional)
                 if (phone && !/^[0-9]{10}$/.test(phone)) {
-                    errors.push('Phone number must be exactly 10 digits');
+                    errors.push('Primary phone number must be exactly 10 digits');
                     errorFields.push('phone');
                     phoneInput.classList.add('error');
                 } else if (phone) {
                     phoneInput.classList.add('success');
+                }
+                
+                // NEW: Alternate phone validation (optional)
+                if (alternatePhone && !/^[0-9]{10}$/.test(alternatePhone)) {
+                    errors.push('Alternate phone number must be exactly 10 digits');
+                    errorFields.push('alternatePhone');
+                    alternatePhoneInput.classList.add('error');
+                } else if (alternatePhone) {
+                    alternatePhoneInput.classList.add('success');
                 }
                 
                 // Password validation
