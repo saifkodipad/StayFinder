@@ -1,386 +1,620 @@
+<!-- footer.ejs -->
 <style>
-  /* Base Style for Minimalist Footer - Matching Screenshot */
-  .footer-clean {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background-color: #FFFFFF;
-    border-top: 1px solid #F0F0F0;
-    padding: 40px 60px;
-    width: 100%;
+  /* Airbnb-Inspired Modern Footer */
+  .airbnb-footer {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    color: #ffffff;
+    padding: 64px 0 24px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    position: relative;
+    overflow: hidden;
   }
 
-  .f-row {
-    max-width: 1200px;
+
+
+  .footer-container {
+    max-width: 1280px;
     margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  /* Grid Layout - Responsive */
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 48px;
+    margin-bottom: 56px;
+  }
+
+  @media (max-width: 1024px) {
+    .footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px;
+      margin-bottom: 48px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 36px;
+      margin-bottom: 40px;
+    }
+    
+    .footer-container {
+      padding: 0 20px;
+    }
+    
+    .airbnb-footer {
+      padding: 48px 0 20px;
+    }
+  }
+
+  /* Section Titles */
+  .footer-section h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+    position: relative;
+    padding-bottom: 12px;
+  }
+
+  .footer-section h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background-color:#FF5A5F;
+    border-radius: 2px;
+  }
+
+  /* Footer Links */
+  .footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .footer-link {
+    color: #b3b3b3;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 400;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    line-height: 1.6;
+    position: relative;
+    padding-left: 0;
+    display: inline-block;
+  }
+
+  .footer-link:hover {
+    color: #FF5A5F;
+    transform: translateX(8px);
+    text-decoration: none;
+  }
+
+  .footer-link::before {
+    content: '→';
+    position: absolute;
+    left: -20px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    color: #FF5A5F;
+  }
+
+  .footer-link:hover::before {
+    opacity: 1;
+    left: -24px;
+  }
+
+  /* Logo Section */
+  .footer-logo {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .footer-logo-icon {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+  }
+
+  .footer-logo-icon:hover {
+    transform: translateY(-3px);
+  }
+
+  .footer-logo-box {
+    width: 48px;
+    height: 48px;
+    background:  #FF5A5F ;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(255, 90, 95, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .footer-logo-icon:hover .footer-logo-box {
+    transform: rotate(5deg) scale(1.05);
+    box-shadow: 0 12px 32px rgba(255, 90, 95, 0.4);
+  }
+
+  .footer-logo-box i {
+    color: white;
+    font-size: 22px;
+  }
+
+  .footer-logo-text {
+    font-size: 26px;
+    font-weight: 800;
+    background-color: #FF5A5F;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .footer-tagline {
+    font-size: 15px;
+    color: #b3b3b3;
+    font-weight: 400;
+    line-height: 1.6;
+    max-width: 280px;
+  }
+
+  /* Newsletter Section */
+  .newsletter-form {
+    margin-top: 24px;
+  }
+
+  .newsletter-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 12px;
+  }
+
+  .newsletter-input-wrapper {
+    position: relative;
+    margin-bottom: 12px;
+  }
+
+  .newsletter-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    font-size: 14px;
+    color: #ffffff;
+    transition: all 0.3s ease;
+  }
+
+  .newsletter-input::placeholder {
+    color: #999999;
+  }
+
+  .newsletter-input:focus {
+    outline: none;
+    border-color: #FF5A5F;
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 4px rgba(255, 90, 95, 0.1);
+  }
+
+  .newsletter-btn {
+    width: 100%;
+    padding: 14px 20px;
+    background-color:#FF5A5F ;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 16px rgba(255, 90, 95, 0.3);
+  }
+
+  .newsletter-btn:hover {
+    background-color: #FF5A5F; 
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(255, 90, 95, 0.4);
+  }
+
+  .newsletter-btn:active {
+    transform: translateY(0);
+  }
+
+  /* Social Links */
+  .social-links {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .social-link {
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b3b3b3;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 16px;
+  }
+
+  .social-link:hover {
+    background: linear-gradient(135deg, #FF5A5F 0%, #FF7C7F 100%);
+    border-color: transparent;
+    color: #ffffff;
+    transform: translateY(-4px) rotate(5deg);
+    box-shadow: 0 8px 20px rgba(255, 90, 95, 0.4);
+  }
+
+  /* Bottom Bar */
+  .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 32px;
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-  }
-
-  /* Left Column - Brand & Contact (Exactly like screenshot) */
-  .f-left-column {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    flex: 0 0 30%;
-  }
-
-  .f-brand-logo {
-    font-size: 24px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: #1a1a1a;
-    margin-bottom: 4px;
-  }
-
-  .f-brand-logo span {
-    color: #FF385C;
-  }
-
-  .f-contact-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .f-email {
-    font-size: 13px;
-    font-weight: 500;
-    color: #666;
-    text-decoration: none;
-    transition: color 0.2s ease;
-    position: relative;
-    display: inline-block;
-    padding-bottom: 2px;
-  }
-
-  .f-email::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background-color: #FF385C;
-    transition: width 0.3s ease;
-  }
-
-  .f-email:hover {
-    color: #FF385C;
-  }
-
-  .f-email:hover::after {
-    width: 100%;
-  }
-
-  .f-cvr {
-    font-size: 11px;
-    font-weight: 500;
-    color: #999;
-    letter-spacing: 0.02em;
-  }
-
-  /* Middle Column - Links (Exactly like screenshot) */
-  .f-middle-column {
-    display: flex;
-    gap: 60px;
-    flex: 0 0 45%;
-  }
-
-  .f-link-column {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .f-column-title {
-    font-size: 11px;
-    font-weight: 800;
-    color: #FF385C;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    margin-bottom: 4px;
-  }
-
-  .f-link {
-    font-size: 13px;
-    font-weight: 500;
-    color: #333;
-    text-decoration: none;
-    transition: color 0.2s ease;
-    line-height: 1.4;
-    position: relative;
-    display: inline-block;
-    padding-bottom: 2px;
-  }
-
-  .f-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background-color: #FF385C;
-    transition: width 0.3s ease;
-  }
-
-  .f-link:hover {
-    color: #FF385C;
-  }
-
-  .f-link:hover::after {
-    width: 100%;
-  }
-
-  /* Active/Clicked state */
-  .f-link:active::after,
-  .f-link.active::after {
-    width: 100%;
-    background-color: #FF385C;
-  }
-
-  /* Right Column - Social (Exactly like screenshot) */
-  .f-right-column {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 16px;
-    flex: 0 0 25%;
-  }
-
-  .f-social-links {
-    display: flex;
-    gap: 16px;
-  }
-
-  .f-social-link {
-    color: #666;
-    font-size: 18px;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    position: relative;
-    display: inline-block;
-    padding-bottom: 4px;
-  }
-
-  .f-social-link::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background-color: #FF385C;
-    transition: width 0.3s ease;
-  }
-
-  .f-social-link:hover {
-    color: #FF385C;
-    transform: translateY(-2px);
-  }
-
-  .f-social-link:hover::after {
-    width: 100%;
-  }
-
-  /* Active/Clicked state for social icons */
-  .f-social-link:active::after,
-  .f-social-link.active::after {
-    width: 100%;
-    background-color: #FF385C;
-  }
-
-  /* Keep underline when focused for accessibility */
-  .f-link:focus::after,
-  .f-email:focus::after,
-  .f-social-link:focus::after {
-    width: 100%;
-  }
-
-  /* Copyright Section (Exactly like screenshot) */
-  .f-copyright {
-    width: 100%;
-    text-align: center;
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #F0F0F0;
-  }
-
-  .copyright-text {
-    font-size: 11px;
-    font-weight: 500;
-    color: #999;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-
-  /* Responsive Design */
-  @media (max-width: 1024px) {
-    .footer-clean {
-      padding: 40px;
-    }
-    
-    .f-row {
-      flex-direction: column;
-      gap: 40px;
-    }
-    
-    .f-left-column,
-    .f-middle-column,
-    .f-right-column {
-      width: 100%;
-    }
-    
-    .f-middle-column {
-      justify-content: space-between;
-    }
-    
-    .f-right-column {
-      align-items: flex-start;
-    }
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
   }
 
   @media (max-width: 768px) {
-    .footer-clean {
-      padding: 32px 24px;
-    }
-    
-    .f-middle-column {
+    .footer-bottom {
       flex-direction: column;
-      gap: 32px;
-    }
-    
-    .f-link-column {
-      gap: 12px;
+      text-align: center;
+      gap: 20px;
+      padding-top: 28px;
     }
   }
 
+  .copyright {
+    font-size: 14px;
+    color: #999999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .copyright i {
+    color: #FF5A5F;
+  }
+
+  .footer-bottom-links {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
   @media (max-width: 480px) {
-    .footer-clean {
-      padding: 24px 20px;
+    .footer-bottom-links {
+      gap: 16px;
+    }
+  }
+
+  .footer-bottom-link {
+    color: #999999;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .footer-bottom-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #FF5A5F 0%, #FF7C7F 100%);
+    transition: width 0.3s ease;
+  }
+
+  .footer-bottom-link:hover {
+    color: #FF5A5F;
+  }
+
+  .footer-bottom-link:hover::after {
+    width: 100%;
+  }
+
+  /* Newsletter Success Message */
+  .newsletter-success {
+    display: none;
+    padding: 12px 16px;
+    background: rgba(46, 213, 115, 0.15);
+    border: 2px solid rgba(46, 213, 115, 0.3);
+    border-radius: 10px;
+    color: #2ed573;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 12px;
+    animation: slideIn 0.4s ease;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .newsletter-success i {
+    margin-right: 8px;
+  }
+
+  /* Tablet Specific Adjustments */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .footer-section h3 {
+      font-size: 13px;
     }
     
-    .f-brand-logo {
-      font-size: 20px;
+    .footer-link {
+      font-size: 14px;
+    }
+  }
+
+  /* Mobile Specific Adjustments */
+  @media (max-width: 640px) {
+    .footer-section {
+      text-align: left;
     }
     
-    .f-email {
-      font-size: 12px;
+    .social-links {
+      justify-content: flex-start;
     }
     
-    .f-link {
-      font-size: 12px;
+    .newsletter-form {
+      margin-top: 20px;
     }
-    
-    .copyright-text {
-      font-size: 10px;
-    }
+  }
+
+  /* Loading State for Newsletter Button */
+  .newsletter-btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .newsletter-btn.success {
+    background: linear-gradient(135deg, #2ed573 0%, #26de81 100%);
+  }
+
+  /* Accessibility */
+  .footer-link:focus,
+  .social-link:focus,
+  .footer-bottom-link:focus,
+  .newsletter-input:focus,
+  .newsletter-btn:focus {
+    outline: 2px solid #FF5A5F;
+    outline-offset: 2px;
   }
 </style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<footer class="footer-clean">
-  <div class="f-row">
-    
-    <!-- Left Column: Brand & Contact -->
-    <div class="f-left-column">
-      <div class="f-brand-logo">
-        <span>S</span>tayFinder
-      </div>
-      <div class="f-contact-info">
-        <a href="mailto:rahamansaif029@gmail.com" class="f-email">
-          rahamansaif029@gmail.com
+<footer class="airbnb-footer">
+  <div class="footer-container">
+    <div class="footer-grid">
+      
+      <!-- Brand & Newsletter Section -->
+      <div class="footer-logo">
+        <a href="/" class="footer-logo-icon" aria-label="StayFinder Home">
+          <div class="footer-logo-box">
+            <i class="fas fa-home"></i>
+          </div>
+          <span class="footer-logo-text">StayFinder</span>
         </a>
-        <div class="f-cvr">
-          CVR: 43937790
+        <p class="footer-tagline">Discover unique homes and unforgettable experiences around the world.</p>
+        
+        <!-- Newsletter Subscription -->
+        <div class="newsletter-form">
+          <p class="newsletter-title">Stay Updated with Our Newsletter</p>
+          <div class="newsletter-input-wrapper">
+            <input 
+              type="email" 
+              placeholder="Enter your email address" 
+              class="newsletter-input"
+              id="newsletterEmail"
+              aria-label="Email address for newsletter"
+            >
+          </div>
+          <button class="newsletter-btn" id="newsletterBtn" aria-label="Subscribe to newsletter">
+            <i class="fas fa-paper-plane"></i> Subscribe
+          </button>
+          <div class="newsletter-success" id="newsletterSuccess">
+            <i class="fas fa-check-circle"></i> Successfully subscribed!
+          </div>
+        </div>
+
+        <!-- Social Media Links -->
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="Follow us on X">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+    <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z"/>
+  </svg>
+</a>
+          <a href="#" class="social-link" aria-label="Follow us on Instagram">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" class="social-link" aria-label="Connect on LinkedIn">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
         </div>
       </div>
-    </div>
 
-    <!-- Middle Column: Links -->
-    <div class="f-middle-column">
-      <!-- Our Services -->
-      <div class="f-link-column">
-        <div class="f-column-title">Our Services</div>
-        <a href="/listings" class="f-link">Featured Stays</a>
-        <a href="/listings/new" class="f-link">Host Your Space</a>
-        <a href="/listings?premium=true" class="f-link">Premium Collection</a>
+      <!-- Discover Section -->
+      <div class="footer-section">
+        <h3>Discover</h3>
+        <nav class="footer-links" aria-label="Discover links">
+          <p  class="footer-link">All Listings</p>
+          <p  class="footer-link">Apartments</p>
+          <p  class="footer-link">Luxury Villas</p>
+          <p  class="footer-link">Cozy Cabins</p>
+          <p class="footer-link">Featured Stays</p>
+          <p  class="footer-link">Trending Now</p>
+        </nav>
       </div>
-      
-      <!-- About Us -->
-      <div class="f-link-column">
-        <div class="f-column-title">About Us</div>
-        <a href="/about" class="f-link">Our Story</a>
-        <a href="/team" class="f-link">The Team</a>
-        <a href="/careers" class="f-link">Careers</a>
-      </div>
-      
-      <!-- Quick Links -->
-      <div class="f-link-column">
-        <div class="f-column-title">Quick Links</div>
-        <a href="/pricing" class="f-link">Pricing</a>
-        <a href="#contact" class="f-link">Contact</a>
-        <a href="/faq" class="f-link">FAQ</a>
-      </div>
-    </div>
 
-    <!-- Right Column: Social -->
-    <div class="f-right-column">
-      <div class="f-social-links">
-        <a href="https://instagram.saifk.xyz" target="_blank" class="f-social-link" aria-label="Instagram">
-          <i class="fa-brands fa-instagram"></i>
-        </a>
-        <a href="https://x.saifk.xyz" target="_blank" class="f-social-link" aria-label="Twitter">
-          <i class="fa-brands fa-x-twitter"></i>
-        </a>
-        <a href="https://linkedin.saifk.xyz" target="_blank" class="f-social-link" aria-label="LinkedIn">
-          <i class="fa-brands fa-linkedin"></i>
-        </a>
+      <!-- Hosting Section -->
+      <div class="footer-section">
+        <h3>Hosting</h3>
+        <nav class="footer-links" aria-label="Hosting links">
+          <p class="footer-link">Become a Host</p>
+          <p class="footer-link">Host Resources</p>
+          <p  class="footer-link">Safety Standards</p>
+          <p  class="footer-link">Host Community</p>
+          <p  class="footer-link">Earnings Calculator</p>
+          <p class="footer-link">Host Insurance</p>
+        </nav>
+      </div>
+
+      <!-- Support Section -->
+      <div class="footer-section">
+        <h3>Support</h3>
+        <nav class="footer-links" aria-label="Support links">
+          <p class="footer-link">Help Center</p>
+          <p  class="footer-link">Trust & Safety</p>
+          <p class="footer-link">Cancellation Policy</p>
+          <p  class="footer-link">COVID-19 Response</p>
+          <p class="footer-link">Accessibility</p>
+          <p  class="footer-link">Contact Us</p>
+        </nav>
       </div>
     </div>
 
-  </div>
-
-  <!-- Copyright -->
-  <div class="f-copyright">
-    <div class="copyright-text">
-      Copyright ©2024 StayFinder. All Rights Reserved.
+    <!-- Bottom Bar -->
+    <div class="footer-bottom">
+      <div class="copyright">
+        <i class="fas fa-heart"></i>
+        <span>© 2024 StayFinder, Inc. All rights reserved.</span>
+      </div>
+      <nav class="footer-bottom-links" aria-label="Legal and company links">
+        <p  class="footer-bottom-link">Privacy Policy</p>
+        <p  class="footer-bottom-link">Terms of Service</p>
+        <p  class="footer-bottom-link">Sitemap</p>
+        <p  class="footer-bottom-link">Company Details</p>
+      </nav>
     </div>
   </div>
 </footer>
 
 <script>
-  // Add underline on click functionality
   document.addEventListener('DOMContentLoaded', function() {
-    const allLinks = document.querySelectorAll('.f-link, .f-email, .f-social-link');
+    const newsletterBtn = document.getElementById('newsletterBtn');
+    const newsletterInput = document.getElementById('newsletterEmail');
+    const newsletterSuccess = document.getElementById('newsletterSuccess');
     
-    allLinks.forEach(link => {
-      // Remove active class from all links when clicking elsewhere
-      document.addEventListener('click', function(e) {
-        if (!e.target.closest('.f-link') && !e.target.closest('.f-email') && !e.target.closest('.f-social-link')) {
-          allLinks.forEach(l => l.classList.remove('active'));
+    // Newsletter subscription handler
+    function handleNewsletterSubscription() {
+      const email = newsletterInput.value.trim();
+      
+      // Simple email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      
+      if (!email) {
+        // Shake animation for empty input
+        newsletterInput.style.animation = 'shake 0.5s';
+        setTimeout(() => {
+          newsletterInput.style.animation = '';
+        }, 500);
+        newsletterInput.focus();
+        return;
+      }
+      
+      if (!emailRegex.test(email)) {
+        // Invalid email format
+        newsletterInput.style.borderColor = '#ff4757';
+        newsletterInput.focus();
+        setTimeout(() => {
+          newsletterInput.style.borderColor = '';
+        }, 2000);
+        return;
+      }
+      
+      // Show loading state
+      newsletterBtn.classList.add('loading');
+      newsletterBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Subscribing...';
+      newsletterBtn.disabled = true;
+      
+      // Simulate API call
+      setTimeout(() => {
+        // Show success state
+        newsletterBtn.classList.remove('loading');
+        newsletterBtn.classList.add('success');
+        newsletterBtn.innerHTML = '<i class="fas fa-check"></i> Subscribed!';
+        newsletterSuccess.style.display = 'block';
+        newsletterInput.value = '';
+        newsletterInput.style.borderColor = '#2ed573';
+        
+        // Reset button after 3 seconds
+        setTimeout(() => {
+          newsletterBtn.classList.remove('success');
+          newsletterBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Subscribe';
+          newsletterBtn.disabled = false;
+          newsletterSuccess.style.display = 'none';
+          newsletterInput.style.borderColor = '';
+        }, 3000);
+      }, 1500);
+    }
+    
+    // Button click handler
+    newsletterBtn.addEventListener('click', handleNewsletterSubscription);
+    
+    // Enter key handler
+    newsletterInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleNewsletterSubscription();
+      }
+    });
+
+    // Add shake animation for validation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Smooth scroll for internal links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
         }
-      });
-      
-      // Add active class on click
-      link.addEventListener('click', function(e) {
-        // For internal links, keep the underline active
-        if (this.href && !this.target) {
-          allLinks.forEach(l => l.classList.remove('active'));
-          this.classList.add('active');
-        }
-        // For external links (target="_blank"), don't keep underline
-        // The underline will show during hover/click but won't stay
-      });
-      
-      // Accessibility: Add underline on focus
-      link.addEventListener('focus', function() {
-        this.classList.add('active');
-      });
-      
-      link.addEventListener('blur', function() {
-        this.classList.remove('active');
       });
     });
   });

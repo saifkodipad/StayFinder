@@ -43,7 +43,20 @@ const listingSchema = new mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: [true, "Owner is required"]
+    required: [true, "Owner is required"],
+    // Get admin ID from environment variable or config
+    default: function() {
+      // Try to get admin ID from environment variable
+      const adminId = process.env.DEFAULT_ADMIN_ID;
+      
+      // If admin ID exists and is valid ObjectId format
+      if (adminId && mongoose.Types.ObjectId.isValid(adminId)) {
+        return new mongoose.Types.ObjectId(adminId);
+      }
+      
+      // Return null and let the middleware handle it
+      return null;
+    }
   },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -82,16 +95,42 @@ const listingSchema = new mongoose.Schema({
 // DELETE EVERY OTHER MIDDLEWARE AND USE ONLY THIS ONE
 // ============================================
 
-listingSchema.pre('save', function(next) {
+listingSchema.pre('save', async function(next) {
   // 1. Update timestamps
   this.updatedAt = new Date();
   
-  // 2. Update likes count
+  // 2. Set default owner (admin) if not provided
+  if (!this.owner) {
+    try {
+      // Find an admin user
+      const User = mongoose.model('User');
+      const adminUser = await User.findOne({ role: 'admin' });
+      
+      if (adminUser) {
+        this.owner = adminUser._id;
+      } else {
+        // If no admin exists, find any user
+        const anyUser = await User.findOne();
+        if (anyUser) {
+          this.owner = anyUser._id;
+        } else {
+          // This should never happen in production, but handle it
+          throw new Error('No users found in database. Cannot assign listing owner.');
+        }
+      }
+    } catch (error) {
+      // Log error but don't crash - let the required validation handle it
+      console.error('Error finding admin for listing owner:', error.message);
+      // The required validation will throw an error if owner is still null
+    }
+  }
+  
+  // 3. Update likes count
   if (Array.isArray(this.likes)) {
     this.likesCount = this.likes.length;
   }
   
-  // 3. Update reviews stats
+  // 4. Update reviews stats
   if (Array.isArray(this.reviews) && this.reviews.length > 0) {
     let total = 0;
     let validReviews = 0;
@@ -115,7 +154,7 @@ listingSchema.pre('save', function(next) {
     this.reviewsCount = 0;
   }
   
-  // 4. ALWAYS CALL next() - THIS FIXES THE ERROR
+  // 5. ALWAYS CALL next() - THIS FIXES THE ERROR
   if (typeof next === 'function') {
     next();
   }

@@ -15,7 +15,7 @@
         
         body {
             min-height: 100vh;
-            background-color: #f9fafb;
+            background-color: #f3f4f6;
         }
         
         /* Layout */
@@ -27,7 +27,7 @@
             display: flex;
         }
         
-        /* Filter Sidebar */
+        /* Filter Sidebar - POSITIONED TO MATCH HEADER HEIGHT */
         .w-64 {
             width: 16rem;
         }
@@ -40,12 +40,11 @@
             position: sticky;
         }
         
-        .top-0 {
-            top: 0;
-        }
-        
-        .h-screen {
-            height: 100vh;
+        /* CHANGED: Exact same vertical position as "Explore Stays" header */
+        .filter-container {
+            top: 2.25rem; /* Exact same top position as the header */
+            height: 33vh;
+            margin-top: 1.5rem; /* Same as main content padding */
         }
         
         .overflow-y-auto {
@@ -293,7 +292,7 @@
             color: #6b7280;
         }
         
-        /* Grid Layout */
+        /* Grid Layout - INCREASED GAP BETWEEN LISTINGS */
         .grid {
             display: grid;
         }
@@ -317,10 +316,10 @@
         }
         
         .gap-6 {
-            gap: 1.5rem;
+            gap: 2rem; /* Increased from 1.5rem */
         }
         
-        /* Listing Cards */
+        /* Listing Cards - UPDATED WITH INCREASED ROUNDED CORNERS AND SHADOW */
         .block {
             display: block;
         }
@@ -329,26 +328,26 @@
             background-color: white;
         }
         
-        .rounded-lg {
-            border-radius: 0.5rem;
+        .rounded-xl {
+            border-radius: 1.25rem; /* Increased from 1rem */
         }
         
-        .shadow-sm {
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        .shadow-lg {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Increased shadow */
         }
         
-        .hover\:shadow-md:hover {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        .hover\:shadow-xl:hover {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15); /* Increased shadow on hover */
         }
         
         .transition-all {
             transition-property: all;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 150ms;
+            transition-duration: 250ms;
         }
         
         .duration-200 {
-            transition-duration: 200ms;
+            transition-duration: 250ms;
         }
         
         .overflow-hidden {
@@ -398,7 +397,7 @@
         .transition-transform {
             transition-property: transform;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            transition-duration: 150ms;
+            transition-duration: 250ms;
         }
         
         .duration-300 {
@@ -444,10 +443,6 @@
             gap: 0.25rem;
         }
         
-        .shadow-sm {
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
-        
         .text-yellow-500 {
             color: #eab308;
         }
@@ -464,17 +459,17 @@
             height: 1rem;
         }
         
-        /* Card Content */
-        .p-4 {
-            padding: 1rem;
+        /* Card Content - UPDATED FONT SIZES AND PADDING */
+        .p-5 {
+            padding: 1.25rem; /* Increased from 1rem */
         }
         
-        .font-semibold {
-            font-weight: 600;
+        .font-extrabold {
+            font-weight: 800; /* Made bolder */
         }
         
-        .mb-1 {
-            margin-bottom: 0.25rem;
+        .mb-2 {
+            margin-bottom: 0.5rem;
         }
         
         .truncate {
@@ -487,8 +482,8 @@
             color: #4b5563;
         }
         
-        .mb-3 {
-            margin-bottom: 0.75rem;
+        .mb-4 {
+            margin-bottom: 1rem; /* Increased from 0.75rem */
         }
         
         .justify-between {
@@ -531,12 +526,68 @@
             overflow: hidden;
             color: #fbbf24;
         }
+        
+        /* UPDATED: Listing title font size - INCREASED AND BOLDER */
+        .listing-title {
+            font-size: 1.25rem; /* Increased from 1.125rem */
+            font-weight: 800; /* Made bolder */
+            line-height: 1.5rem;
+        }
+        
+        /* UPDATED: Paragraph font size - INCREASED */
+        .location-text {
+            font-size: 1rem; /* Increased from 0.875rem */
+            color: #6b7280;
+            line-height: 1.375rem;
+        }
+        
+        /* UPDATED: Price color to light pink and increased font size */
+        .price-text {
+            font-size: 1.375rem; /* Increased from 1.25rem */
+            color: #f472b6; /* Light pink color */
+            font-weight: 700;
+        }
+        
+        /* UPDATED: Review text */
+        .review-text {
+            font-size: 0.9375rem; /* Slightly increased */
+            color: #6b7280;
+        }
+        
+        /* Page header - FIXED: Adjusted for exact alignment */
+        .page-header {
+            font-size: 2.25rem; /* Slightly increased */
+            font-weight: 900;
+            color: #111827;
+            margin-bottom: 2rem; /* Increased from 1.5rem */
+            padding-left: 1rem;
+            letter-spacing: -0.025em;
+            margin-top: 0; /* Ensure no extra margin */
+            padding-top: 0; /* Ensure no extra padding */
+        }
+        
+        /* Main content background */
+        .main-content {
+            background-color: #f3f4f6;
+            padding-top: 1.5rem; /* This creates the space from top */
+        }
+        
+        /* Image rounded corners */
+        .rounded-t-xl {
+            border-top-left-radius: 1.25rem;
+            border-top-right-radius: 1.25rem;
+        }
+        
+        /* Card margin */
+        .listing-card {
+            margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 <body>
 <div class="min-h-screen flex">
-  <!-- STICKY LEFT FILTER BAR -->
-  <div class="w-64 flex-shrink-0 sticky top-0 h-screen overflow-y-auto bg-white border-r border-gray-200 p-4">
+  <!-- STICKY LEFT FILTER BAR - POSITIONED EXACTLY AT SAME VERTICAL POSITION AS HEADER -->
+  <div class="w-64 flex-shrink-0 sticky filter-container bg-white border-r border-gray-200 p-4">
     <div class="mb-6">
       <h3 class="text-xl font-bold text-gray-900">Filters</h3>
     </div>
@@ -591,7 +642,8 @@
     <div class="flex gap-2">
       <button 
         id="applyFilters"
-        class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition font-medium"
+        style="background-color:#FF5A5F"
+        class="flex-1 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition font-medium"
       >
         Apply
       </button>
@@ -605,7 +657,10 @@
   </div>
 
   <!-- MAIN LISTINGS AREA -->
-  <div class="flex-1 p-4 lg:p-6">
+  <div class="flex-1 main-content p-4 lg:p-6">
+    <!-- PAGE HEADER -->
+    <h1 class="page-header">Explore Stays</h1>
+    
     <!-- LISTINGS GRID -->
     <% if (allListings && allListings.length === 0) { %>
       <div class="text-center py-16">
@@ -622,11 +677,11 @@
     <% if (allListings && allListings.length > 0) { %>
     <div class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <% for(let listing of allListings) { %>
-        <a href="/listings/<%= listing._id %>" class="block">
-          <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-200">
+        <a href="/listings/<%= listing._id %>" class="block listing-card">
+          <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 overflow-hidden border border-gray-200">
             
             <!-- IMAGE -->
-            <div class="relative h-48 w-full overflow-hidden bg-gray-100">
+            <div class="relative h-48 w-full overflow-hidden bg-gray-100 rounded-t-xl">
               <% if (listing.media && listing.media.length > 0 && listing.media[0].url) { %>
                 <img
                   src="<%= listing.media[0].url %>"
@@ -677,29 +732,30 @@
             </div>
 
             <!-- CARD CONTENT -->
-            <div class="p-4">
-              <!-- Title -->
-              <h3 class="font-semibold text-gray-900 mb-1 truncate"><%= listing.title %></h3>
+            <div class="p-5">
+              <!-- Title - UPDATED FONT SIZE AND BOLDER -->
+              <h3 class="listing-title text-gray-900 mb-2 truncate"><%= listing.title %></h3>
               
-              <!-- Location -->
-              <p class="text-gray-600 text-sm mb-3">
+              <!-- Location - INCREASED FONT SIZE -->
+              <p class="location-text mb-4">
                 <%= listing.location %>, <%= listing.country %>
               </p>
               
               <!-- Price & Reviews -->
               <div class="flex items-center justify-between">
                 <div>
-                  <span class="font-bold text-gray-900">$<%= listing.price.toLocaleString("en-IN") %></span>
+                  <!-- UPDATED: Price with light pink color and increased font size -->
+                  <span class="price-text">$<%= listing.price.toLocaleString("en-IN") %></span>
                   <span class="text-gray-600 text-sm"> / night</span>
                 </div>
                 
-                <!-- Reviews count - SIMPLIFIED VERSION -->
+                <!-- Reviews count - UPDATED CLASS -->
                 <% if (listing.averageRating > 0 && listing.reviewsCount > 0) { %>
-                  <div class="flex items-center text-sm text-gray-600">
+                  <div class="flex items-center review-text">
                     <span>★ <%= listing.averageRating.toFixed(1) %> (<%= listing.reviewsCount %>)</span>
                   </div>
                 <% } else if (listing.reviewsCount === 0) { %>
-                  <span class="text-sm text-gray-500">No reviews</span>
+                  <span class="review-text">No reviews</span>
                 <% } %>
               </div>
             </div>

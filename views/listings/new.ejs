@@ -3,560 +3,1135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Listing - StayFinder</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Create New Listing - StayFinder</title>
     <style>
+        /* ========== MOBILE FIRST STYLES (320px-767px) ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
         body {
-            background-color: #f8f9fa;
+            background-color: #f5f5f5;
             min-height: 100vh;
-            padding: 20px 0;
+            padding: 0;
+            font-size: 14px;
         }
-        .listing-card {
+        
+        .container {
             width: 100%;
-            max-width: 800px;
             margin: 0 auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: white;
+            padding: 16px;
         }
-        .form-label {
-            font-weight: 500;
-            margin-bottom: 0.5rem;
+        
+        h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e5e7eb;
         }
-        #clientAlert {
-            margin-bottom: 1.5rem;
+        
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
         }
+        
+        .form-group {
+            margin-bottom: 16px;
+            width: 100%;
+        }
+        
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        
+        .required::after {
+            content: " *";
+            color: #FF5A5F;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #FF5A5F;
+            box-shadow: 0 0 0 3px rgba(255, 90, 95, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        /* Validation Styles */
         .form-control.error {
-            border-color: #dc3545;
+            border-color: #FF5A5F;
         }
+        
         .form-control.success {
             border-color: #198754;
         }
-        #dropZone {
-            border: 2px dashed #ced4da;
-            border-radius: 0.375rem;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        #dropZone:hover, #dropZone.drag-over {
-            border-color: #0d6efd;
-            background-color: rgba(13, 110, 253, 0.05);
-        }
-        #dropZone i {
-            font-size: 3rem;
-            color: #6c757d;
-            margin-bottom: 1rem;
-        }
-        .file-preview {
-            margin-top: 1rem;
-        }
-        .file-item {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem;
-            border: 1px solid #dee2e6;
-            border-radius: 0.375rem;
-            margin-bottom: 0.5rem;
-            background-color: #fff;
-        }
-        .file-item i {
-            font-size: 1.5rem;
-            margin-right: 0.75rem;
-        }
-        .file-item.image i {
-            color: #0d6efd;
-        }
-        .file-item.video i {
-            color: #6f42c1;
-        }
-        .file-info {
-            flex-grow: 1;
-        }
-        .file-name {
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-        }
-        .file-size {
-            font-size: 0.875rem;
-            color: #6c757d;
-        }
-        .remove-file {
-            color: #dc3545;
-            cursor: pointer;
-            padding: 0.25rem;
-        }
-        .remove-file:hover {
-            color: #bb2d3b;
-        }
+        
         .character-count {
-            font-size: 0.875rem;
+            font-size: 12px;
             color: #6c757d;
-            margin-top: 0.25rem;
+            margin-top: 4px;
         }
+        
         .character-count.near-limit {
             color: #ffc107;
         }
+        
         .character-count.over-limit {
-            color: #dc3545;
+            color: #FF5A5F;
         }
-        .required::after {
-            content: " *";
-            color: #dc3545;
+        
+        /* Section Titles */
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            margin: 32px 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Upload Section */
+        .upload-section {
+            margin: 32px 0;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        /* Upload Area */
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 30px 16px;
+            text-align: center;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 24px;
+            width: 90vw;
+            height: 150px;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #FF5A5F;
+            background-color: #fff5f5;
+        }
+        
+        .upload-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .upload-icon {
+            width: 40px;
+            height: 40px;
+            color: #6b7280;
+        }
+        
+        .upload-text h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+        
+        .upload-text p {
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .choose-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #FF5A5F;
+            color: white;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 16px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .choose-btn:hover {
+            background-color: #E04E53;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        /* Media Grid */
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        
+        /* Media Item */
+        .media-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f3f4f6;
+            aspect-ratio: 1/1;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .media-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .media-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px;
+            font-size: 10px;
+            z-index: 2;
+        }
+        
+        /* New Media Item */
+        .new-media-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f3f4f6;
+            aspect-ratio: 1/1;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .new-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background-color: #FF5A5F;
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 12px;
+            z-index: 2;
+        }
+        
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+            width: 100%;
+            min-height: 44px;
+        }
+        
+        .save-btn {
+            background-color: #FF5A5F;
+            color: white;
+        }
+        
+        .save-btn:hover {
+            background-color: #E04E53;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 90, 95, 0.3);
+        }
+        
+        .back-btn {
+            background-color: white;
+            color: #374151;
+            border-color: #d1d5db;
+        }
+        
+        .back-btn:hover {
+            background-color: #f9fafb;
+        }
+        
+        /* Flash Messages */
+        .flash-messages {
+            margin-bottom: 16px;
+        }
+        
+        /* AIRBNB PINK ALERT STYLES */
+        #clientAlert {
+            border-radius: 12px;
+            margin-bottom: 20px;
+            padding: 16px 20px;
+            display: none;
+            animation: slideInDown 0.3s ease;
+            position: relative;
+            background-color: rgba(255, 90, 95, 0.95);
+            border: 1px solid rgba(255, 90, 95, 0.3);
+            border-left: 4px solid #FF5A5F;
+            color: #FFFFFF;
+            padding-right: 50px;
+            box-shadow: 0 4px 20px rgba(255, 90, 95, 0.2);
+        }
+        
+        /* X Button Styles - Top Right Corner */
+        #clientAlert .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 0;
+            line-height: 1;
+        }
+        
+        #clientAlert .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        #clientAlert .close-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Alert Content */
+        #clientAlert .alert-content {
+            color: white;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        #clientAlert .alert-content strong {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        
+        #clientAlert .alert-content ul {
+            padding-left: 20px;
+            margin: 8px 0 0 0;
+        }
+        
+        #clientAlert .alert-content li {
+            margin-bottom: 4px;
+        }
+        
+        #clientAlert .alert-content li:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Ensure all text is white */
+        #clientAlert,
+        #clientAlert *,
+        #clientAlert div,
+        #clientAlert span,
+        #clientAlert p,
+        #clientAlert ul,
+        #clientAlert li,
+        #clientAlert strong {
+            color: white !important;
+        }
+        
+        /* Flash Messages */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .alert-success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        
+        .alert-error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* ========== TABLET STYLES (768px-1023px) ========== */
+        @media (min-width: 768px) {
+            body {
+                font-size: 16px;
+                padding: 24px;
+            }
+            
+            .container {
+                max-width: 90%;
+                padding: 24px;
+                border-radius: 12px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            }
+            
+            h1 {
+                font-size: 24px;
+                margin-bottom: 30px;
+            }
+            
+            .form-grid {
+                gap: 20px;
+            }
+            
+            .form-group {
+                margin-bottom: 20px;
+            }
+            
+            .media-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+            }
+            
+            .upload-area {
+                width: 80vw;
+                height: 180px;
+                padding: 40px 20px;
+            }
+            
+            .upload-text h3 {
+                font-size: 18px;
+            }
+            
+            .upload-text p {
+                font-size: 14px;
+            }
+            
+            .form-actions {
+                flex-direction: row;
+                gap: 16px;
+            }
+            
+            .btn {
+                width: auto;
+                flex: 1;
+            }
+            
+            .section-title {
+                font-size: 20px;
+            }
+            
+            #clientAlert {
+                padding: 18px 24px;
+                padding-right: 60px;
+            }
+            
+            #clientAlert .close-btn {
+                top: 18px;
+                right: 18px;
+            }
+        }
+        
+        /* ========== LAPTOP STYLES (1024px-1439px) ========== */
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 1200px;
+                padding: 32px;
+            }
+            
+            .form-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 24px;
+            }
+            
+            .form-group.full-width {
+                grid-column: 1 / -1;
+            }
+            
+            .media-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+            }
+            
+            .upload-area {
+                width: 100%;
+                height: 200px;
+            }
+            
+            .form-actions {
+                justify-content: flex-start;
+            }
+            
+            .btn {
+                flex: 0 1 auto;
+                padding: 12px 24px;
+            }
+            
+            #clientAlert {
+                padding: 20px 28px;
+                padding-right: 65px;
+            }
+            
+            #clientAlert .close-btn {
+                top: 20px;
+                right: 20px;
+                width: 26px;
+                height: 26px;
+                font-size: 20px;
+            }
+        }
+        
+        /* ========== DESKTOP STYLES (1440px+) ========== */
+        @media (min-width: 1440px) {
+            .container {
+                max-width: 1400px;
+                padding: 40px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            .media-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .section-title {
+                font-size: 22px;
+            }
+            
+            #clientAlert {
+                padding: 22px 32px;
+                padding-right: 70px;
+            }
+            
+            #clientAlert .close-btn {
+                top: 22px;
+                right: 22px;
+                width: 28px;
+                height: 28px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="listing-card card">
-            <div class="card-header bg-primary text-white text-center">
-                <h3 class="mb-0">Create a New Listing</h3>
-            </div>
-            <div class="card-body p-4">
-                <!-- Single alert container for client-side validation -->
-                <div id="clientAlert" style="display: none;"></div>
-                
-                <form action="/listings" method="POST" enctype="multipart/form-data" id="listingForm">
-                    <!-- Title -->
-                    <div class="mb-4">
-                        <label for="title" class="form-label required">Title</label>
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            id="title" 
-                            name="title" 
-                            placeholder="Enter listing title"
-                            maxlength="100"
-                        >
-                        <div class="character-count" id="titleCount">0/100 characters</div>
-                    </div>
-                    
-                    <!-- Description -->
-                    <div class="mb-4">
-                        <label for="description" class="form-label required">Description</label>
-                        <textarea 
-                            class="form-control" 
-                            id="description" 
-                            name="description" 
-                            rows="4"
-                            placeholder="Describe your listing"
-                            maxlength="2000"
-                        ></textarea>
-                        <div class="character-count" id="descriptionCount">0/2000 characters</div>
-                    </div>
-                    
-                    <!-- Price -->
-                    <div class="mb-4">
-                        <label for="price" class="form-label required">Price ($)</label>
-                        <input 
-                            type="number" 
-                            class="form-control" 
-                            id="price" 
-                            name="price" 
-                            placeholder="Enter price per night"
-                            min="50"
-                            max="10000"
-                            step="0.01"
-                        >
-                        <div class="form-text">Price per night ($50 - $10,000)</div>
-                    </div>
-                    
-                    <!-- Location -->
-                    <div class="mb-4">
-                        <label for="location" class="form-label required">Location</label>
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            id="location" 
-                            name="location" 
-                            placeholder="e.g., Barkas Hyderabad"
-                            maxlength="200"
-                        >
-                        <div class="character-count" id="locationCount">0/200 characters</div>
-                    </div>
-                    
-                    <!-- Country -->
-                    <div class="mb-4">
-                        <label for="country" class="form-label required">Country</label>
-                        <input 
-                            type="text" 
-                            class="form-control" 
-                            id="country" 
-                            name="country" 
-                            placeholder="e.g., India"
-                            maxlength="100"
-                        >
-                        <div class="character-count" id="countryCount">0/100 characters</div>
-                    </div>
-                    
-                    <!-- Upload Files -->
-                    <div class="mb-4">
-                        <label class="form-label required">Upload Media Files</label>
-                        <div id="dropZone">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <h5>Drag & Drop or Click to Upload</h5>
-                            <p class="text-muted mb-0">(Images and videos supported. At least one file required.)</p>
-                        </div>
-                        <input 
-                            type="file" 
-                            name="media"
-                            multiple
-                            accept="image/*,video/*"
-                            class="d-none"
-                            id="fileInput"
-                        >
-                        <div id="fileList" class="file-preview"></div>
-                    </div>
-                    
-                    <!-- Create Listing Button -->
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary btn-lg py-3" id="submitBtn">
-                            Create Listing
-                        </button>
-                    </div>
-                </form>
-            </div>
+        <h1>Create New Listing</h1>
+        
+        <!-- Flash Messages -->
+        <div class="flash-messages">
+            <% if (success && success.length > 0) { %>
+                <div class="alert alert-success"><%= success %></div>
+            <% } %>
+            <% if (error && error.length > 0) { %>
+                <div class="alert alert-error"><%= error %></div>
+            <% } %>
         </div>
+        
+        <!-- Client-side validation alert -->
+        <div id="clientAlert" style="display: none;"></div>
+        
+        <!-- Create Form -->
+        <form action="/listings" method="POST" enctype="multipart/form-data" id="createForm">
+            <div class="form-grid">
+                <!-- Title -->
+                <div class="form-group">
+                    <label for="title" class="required">Title</label>
+                    <input 
+                        type="text" 
+                        id="title" 
+                        name="title" 
+                        placeholder="Enter listing title"
+                        maxlength="100"
+                        class="form-control"
+                    >
+                    <div class="character-count" id="titleCount">0/100 characters</div>
+                </div>
+                
+                <!-- Price -->
+                <div class="form-group">
+                    <label for="price" class="required">Price (per night)</label>
+                    <input 
+                        type="number" 
+                        id="price" 
+                        name="price" 
+                        placeholder="Enter price"
+                        min="50"
+                        max="10000"
+                        step="0.01"
+                        class="form-control"
+                    >
+                    <div class="form-text">Price per night ($50 - $10,000)</div>
+                </div>
+                
+                <!-- Description -->
+                <div class="form-group full-width">
+                    <label for="description" class="required">Description</label>
+                    <textarea 
+                        id="description" 
+                        name="description" 
+                        placeholder="Describe your property..."
+                        maxlength="2000"
+                        class="form-control"
+                    ></textarea>
+                    <div class="character-count" id="descriptionCount">0/2000 characters</div>
+                </div>
+                
+                <!-- Location -->
+                <div class="form-group">
+                    <label for="location" class="required">Location</label>
+                    <input 
+                        type="text" 
+                        id="location" 
+                        name="location" 
+                        placeholder="City, State, etc."
+                        maxlength="200"
+                        class="form-control"
+                    >
+                    <div class="character-count" id="locationCount">0/200 characters</div>
+                </div>
+                
+                <!-- Country -->
+                <div class="form-group">
+                    <label for="country" class="required">Country</label>
+                    <input 
+                        type="text" 
+                        id="country" 
+                        name="country" 
+                        placeholder="e.g., India, USA, Germany, etc."
+                        maxlength="100"
+                        class="form-control"
+                    >
+                    <div class="character-count" id="countryCount">0/100 characters</div>
+                </div>
+            </div>
+            
+            <!-- UPLOAD MEDIA SECTION -->
+            <div class="upload-section">
+                <h2 class="section-title">
+                    <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                    </svg>
+                    Upload Media Files
+                </h2>
+                <p style="color: #6b7280; margin-bottom: 20px; font-size: 14px;">
+                    Drag & drop files or click to browse. Supports images and videos. Max 12 files total.
+                </p>
+                
+                <!-- Upload Area -->
+                <div class="upload-area" id="uploadArea" onclick="document.getElementById('newMedia').click()">
+                    <div class="upload-content">
+                        <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                        <div class="upload-text">
+                            <h3>Drag & drop files here</h3>
+                            <p style="font-size: 12px; color: #9ca3af;">Supports images (JPG, PNG) and videos (MP4). Max 10MB each.</p>
+                        </div>
+                       
+                    </div>
+                </div>
+                
+                <!-- Hidden file input -->
+                <input 
+                    type="file" 
+                    id="newMedia" 
+                    name="media" 
+                    class="file-input" 
+                    multiple 
+                    accept="image/*,video/*"
+                    onchange="handleFileSelect(event)"
+                >
+                
+                <!-- Media preview grid -->
+                <div class="media-grid" id="mediaPreviewGrid">
+                    <!-- Preview items will be added here dynamically -->
+                </div>
+                
+                <!-- New uploads info -->
+                <div id="newUploadsInfo" style="display: none; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 15px; margin-top: 20px;">
+                    <p style="color: #065f46; font-size: 14px; font-weight: 500;">
+                        <svg style="width: 20px; height: 20px; display: inline; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Files uploaded successfully. They will appear in the preview above.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="btn save-btn" id="submitBtn">
+                    <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Create Listing
+                </button>
+                
+                <a href="/listings" class="btn back-btn">
+                    <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    Back to Listings
+                </a>
+            </div>
+        </form>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const listingForm = document.getElementById('listingForm');
-            const clientAlert = document.getElementById('clientAlert');
-            const submitBtn = document.getElementById('submitBtn');
+        // Get form elements
+        const createForm = document.getElementById('createForm');
+        const clientAlert = document.getElementById('clientAlert');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        // Get all form inputs
+        const titleInput = document.getElementById('title');
+        const descriptionInput = document.getElementById('description');
+        const priceInput = document.getElementById('price');
+        const locationInput = document.getElementById('location');
+        const countryInput = document.getElementById('country');
+        
+        // Character counters
+        const titleCount = document.getElementById('titleCount');
+        const descriptionCount = document.getElementById('descriptionCount');
+        const locationCount = document.getElementById('locationCount');
+        const countryCount = document.getElementById('countryCount');
+        
+        // Track all new files
+        let newFiles = [];
+        
+        // Function to hard refresh the page (Ctrl+Shift+R style)
+        function hardRefreshPage() {
+            // Clear all form data
+            createForm.reset();
             
-            // Get all form inputs
-            const titleInput = document.getElementById('title');
-            const descriptionInput = document.getElementById('description');
-            const priceInput = document.getElementById('price');
-            const locationInput = document.getElementById('location');
-            const countryInput = document.getElementById('country');
-            const fileInput = document.getElementById('fileInput');
-            const dropZone = document.getElementById('dropZone');
-            const fileList = document.getElementById('fileList');
+            // Clear file previews
+            document.getElementById('mediaPreviewGrid').innerHTML = '';
+            newFiles = [];
+            document.getElementById('newUploadsInfo').style.display = 'none';
             
-            // Character counters
-            const titleCount = document.getElementById('titleCount');
-            const descriptionCount = document.getElementById('descriptionCount');
-            const locationCount = document.getElementById('locationCount');
-            const countryCount = document.getElementById('countryCount');
+            // Method 1: Force reload from server bypassing cache
+            const timestamp = new Date().getTime();
+            const url = window.location.href.split('?')[0] + '?_=' + timestamp;
             
-            // File tracking
-            let selectedFiles = [];
-            
-            // Character counter updates
-            function updateCharacterCount(input, counter, maxLength) {
-                const length = input.value.length;
-                counter.textContent = `${length}/${maxLength} characters`;
-                
-                if (length > maxLength * 0.9) {
-                    counter.className = 'character-count near-limit';
-                } else if (length > maxLength) {
-                    counter.className = 'character-count over-limit';
-                } else {
-                    counter.className = 'character-count';
-                }
+            // Method 2: Clear browser cache and force reload
+            if (window.location.reload) {
+                window.location.reload(true); // true forces cache bypass
             }
             
-            // Initialize character counters
-            titleInput.addEventListener('input', () => updateCharacterCount(titleInput, titleCount, 100));
-            descriptionInput.addEventListener('input', () => updateCharacterCount(descriptionInput, descriptionCount, 2000));
-            locationInput.addEventListener('input', () => updateCharacterCount(locationInput, locationCount, 200));
-            countryInput.addEventListener('input', () => updateCharacterCount(countryInput, countryCount, 100));
+            // Method 3: For modern browsers - navigate to URL with timestamp
+            setTimeout(() => {
+                window.location.href = url;
+            }, 10);
             
-            // File upload handling
-            dropZone.addEventListener('click', function() {
-                fileInput.click();
-            });
+            // Method 4: Clear all caches if available
+            if (caches && caches.keys) {
+                caches.keys().then(function(names) {
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                });
+            }
+        }
+        
+        // Character counter updates
+        function updateCharacterCount(input, counter, maxLength) {
+            const length = input.value.length;
+            counter.textContent = `${length}/${maxLength} characters`;
             
-            // Drag and drop events
-            dropZone.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                dropZone.classList.add('drag-over');
-            });
-            
-            dropZone.addEventListener('dragleave', function(e) {
-                e.preventDefault();
-                dropZone.classList.remove('drag-over');
-            });
-            
-            dropZone.addEventListener('drop', function(e) {
-                e.preventDefault();
-                dropZone.classList.remove('drag-over');
-                
-                if (e.dataTransfer.files.length > 0) {
-                    handleFiles(e.dataTransfer.files);
-                }
-            });
-            
-            fileInput.addEventListener('change', function(e) {
-                if (this.files.length > 0) {
-                    handleFiles(this.files);
-                }
-            });
-            
-            function handleFiles(files) {
-                // Convert FileList to Array
-                const newFiles = Array.from(files);
-                
-                // Filter for only images and videos
-                const validFiles = newFiles.filter(file => 
-                    file.type.startsWith('image/') || file.type.startsWith('video/')
-                );
-                
-                // Add to selected files
-                selectedFiles = [...selectedFiles, ...validFiles];
-                
-                // Update file input
-                const dataTransfer = new DataTransfer();
-                selectedFiles.forEach(file => dataTransfer.items.add(file));
-                fileInput.files = dataTransfer.files;
-                
-                // Show file list
-                showFileList();
-                
-                // Clear any error alert when files are uploaded
+            if (length > maxLength * 0.9) {
+                counter.className = 'character-count near-limit';
+            } else if (length > maxLength) {
+                counter.className = 'character-count over-limit';
+            } else {
+                counter.className = 'character-count';
+            }
+        }
+        
+        // Initialize character counters
+        titleInput.addEventListener('input', () => updateCharacterCount(titleInput, titleCount, 100));
+        descriptionInput.addEventListener('input', () => updateCharacterCount(descriptionInput, descriptionCount, 2000));
+        locationInput.addEventListener('input', () => updateCharacterCount(locationInput, locationCount, 200));
+        countryInput.addEventListener('input', () => updateCharacterCount(countryInput, countryCount, 100));
+        
+        // Remove validation styling when user starts typing
+        function clearFieldStyling(input) {
+            input.classList.remove('error', 'success');
+        }
+        
+        // Add input listeners to clear styling
+        [titleInput, descriptionInput, priceInput, locationInput, countryInput].forEach(input => {
+            input.addEventListener('input', function() {
+                clearFieldStyling(this);
                 if (clientAlert.style.display === 'block') {
                     clientAlert.style.display = 'none';
                     clientAlert.innerHTML = '';
-                    clientAlert.className = '';
                 }
-            }
+            });
+        });
+        
+        // Handle file selection
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            const mediaPreviewGrid = document.getElementById('mediaPreviewGrid');
             
-            function showFileList() {
-                fileList.innerHTML = '';
+            // Process new files
+            const newSelectedFiles = Array.from(files);
+            
+            if (newSelectedFiles.length > 0) {
+                // Check total files won't exceed 12
+                const existingNewItems = document.querySelectorAll('.new-media-item');
+                const totalItems = existingNewItems.length + newSelectedFiles.length;
                 
-                if (selectedFiles.length === 0) {
-                    fileList.innerHTML = '<div class="text-center text-muted py-3">No files selected</div>';
+                if (totalItems > 12) {
+                    alert(`Maximum 12 files allowed. You have ${existingNewItems.length} existing files. Please select fewer files.`);
+                    event.target.value = '';
                     return;
                 }
                 
-                selectedFiles.forEach((file, index) => {
-                    const fileItem = document.createElement('div');
-                    fileItem.className = `file-item ${file.type.startsWith('image/') ? 'image' : 'video'}`;
+                // Add each new file to the media preview grid
+                newSelectedFiles.forEach((file, index) => {
+                    // Check file size (max 10MB)
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert(`File ${file.name} is too large. Maximum size is 10MB.`);
+                        return;
+                    }
                     
-                    const icon = file.type.startsWith('image/') ? 
-                        '<i class="fas fa-image"></i>' : 
-                        '<i class="fas fa-video"></i>';
+                    // Check file type
+                    if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+                        alert(`File ${file.name} is not an image or video.`);
+                        return;
+                    }
                     
-                    const size = (file.size / 1024 / 1024).toFixed(2);
+                    const reader = new FileReader();
                     
-                    fileItem.innerHTML = `
-                        ${icon}
-                        <div class="file-info">
-                            <div class="file-name">${file.name}</div>
-                            <div class="file-size">${size} MB</div>
-                        </div>
-                        <div class="remove-file" data-index="${index}">
-                            <i class="fas fa-times"></i>
-                        </div>
-                    `;
+                    reader.onload = function(e) {
+                        const newMediaItem = document.createElement('div');
+                        newMediaItem.className = 'new-media-item fade-in';
+                        newMediaItem.dataset.fileIndex = newFiles.length;
+                        newMediaItem.dataset.type = 'new';
+                        
+                        // Add "NEW" badge
+                        const newBadge = document.createElement('div');
+                        newBadge.className = 'new-badge';
+                        newBadge.textContent = 'NEW';
+                        newMediaItem.appendChild(newBadge);
+                        
+                        // Add media preview
+                        if (file.type.startsWith('image/')) {
+                            newMediaItem.innerHTML += `
+                                <img src="${e.target.result}" class="media-preview" alt="${file.name}">
+                                <div class="media-info">${file.name}</div>
+                            `;
+                        } else if (file.type.startsWith('video/')) {
+                            newMediaItem.innerHTML += `
+                                <video class="media-preview" controls>
+                                    <source src="${e.target.result}" type="${file.type}">
+                                </video>
+                                <div class="media-info">${file.name}</div>
+                            `;
+                        }
+                        
+                        // Add to the newFiles array
+                        const fileObj = {
+                            file: file,
+                            previewUrl: e.target.result
+                        };
+                        newFiles.push(fileObj);
+                        
+                        // Add to media preview grid
+                        mediaPreviewGrid.appendChild(newMediaItem);
+                    };
                     
-                    fileList.appendChild(fileItem);
+                    reader.readAsDataURL(file);
                 });
                 
-                // Add remove functionality
-                document.querySelectorAll('.remove-file').forEach(button => {
-                    button.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const index = parseInt(this.getAttribute('data-index'));
-                        removeFile(index);
-                    });
-                });
+                // Show upload success message
+                document.getElementById('newUploadsInfo').style.display = 'block';
+            } else {
+                document.getElementById('newUploadsInfo').style.display = 'none';
+            }
+        }
+        
+        // Drag and drop functionality
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('newMedia');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            uploadArea.classList.add('dragover');
+        }
+        
+        function unhighlight() {
+            uploadArea.classList.remove('dragover');
+        }
+        
+        uploadArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            // Update file input
+            const dataTransfer = new DataTransfer();
+            Array.from(files).forEach(file => dataTransfer.items.add(file));
+            fileInput.files = dataTransfer.files;
+            
+            // Trigger change event
+            const event = new Event('change');
+            fileInput.dispatchEvent(event);
+        }
+        
+        // Form submission handler
+        createForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Clear previous client alert and field styling
+            clientAlert.style.display = 'none';
+            clientAlert.innerHTML = '';
+            
+            // Clear all field styling
+            [titleInput, descriptionInput, priceInput, locationInput, countryInput].forEach(input => {
+                input.classList.remove('error', 'success');
+            });
+            
+            // Get values
+            const title = titleInput.value.trim();
+            const description = descriptionInput.value.trim();
+            const priceStr = priceInput.value.trim();
+            const price = priceStr ? parseFloat(priceStr) : NaN;
+            const location = locationInput.value.trim();
+            const country = countryInput.value;
+            
+            // Validation
+            const errors = [];
+            const errorFields = [];
+            
+            // Title validation
+            if (!title) {
+                errors.push('Please enter a title');
+                errorFields.push('title');
+                titleInput.classList.add('error');
+            } else if (title.length < 5) {
+                errors.push('Title must be at least 5 characters');
+                errorFields.push('title');
+                titleInput.classList.add('error');
+            } else if (title.length > 100) {
+                errors.push('Title cannot exceed 100 characters');
+                errorFields.push('title');
+                titleInput.classList.add('error');
+            } else {
+                titleInput.classList.add('success');
             }
             
-            function removeFile(index) {
-                selectedFiles.splice(index, 1);
-                
-                // Update file input
-                const dataTransfer = new DataTransfer();
-                selectedFiles.forEach(file => dataTransfer.items.add(file));
-                fileInput.files = dataTransfer.files;
-                
-                // Update display
-                showFileList();
+            // Description validation
+            if (!description) {
+                errors.push('Please enter a description');
+                errorFields.push('description');
+                descriptionInput.classList.add('error');
+            } else if (description.length < 20) {
+                errors.push('Description must be at least 20 characters');
+                errorFields.push('description');
+                descriptionInput.classList.add('error');
+            } else if (description.length > 2000) {
+                errors.push('Description cannot exceed 2000 characters');
+                errorFields.push('description');
+                descriptionInput.classList.add('error');
+            } else {
+                descriptionInput.classList.add('success');
             }
             
-            // Initialize empty file list
-            showFileList();
-            
-            // Function to clear all field styling
-            function clearAllFieldStyling() {
-                [titleInput, descriptionInput, priceInput, locationInput, countryInput].forEach(input => {
-                    input.classList.remove('error', 'success');
-                });
+            // Price validation
+            if (!priceStr) {
+                errors.push('Please enter a price');
+                errorFields.push('price');
+                priceInput.classList.add('error');
+            } else if (isNaN(price)) {
+                errors.push('Price must be a valid number');
+                errorFields.push('price');
+                priceInput.classList.add('error');
+            } else if (price < 50) {
+                errors.push('Price must be at least $50');
+                errorFields.push('price');
+                priceInput.classList.add('error');
+            } else if (price > 10000) {
+                errors.push('Price cannot exceed $10,000');
+                errorFields.push('price');
+                priceInput.classList.add('error');
+            } else {
+                priceInput.classList.add('success');
             }
             
-            // Form submission handler
-            listingForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                
-                // Clear previous client alert and field styling
-                clientAlert.style.display = 'none';
-                clientAlert.innerHTML = '';
-                clientAlert.className = '';
-                
-                // Clear all field styling
-                clearAllFieldStyling();
-                
-                // Get values
-                const title = titleInput.value.trim();
-                const description = descriptionInput.value.trim();
-                const priceStr = priceInput.value.trim();
-                const price = priceStr ? parseFloat(priceStr) : NaN;
-                const location = locationInput.value.trim();
-                const country = countryInput.value.trim();
-                
-                // Validation
-                const errors = [];
-                const errorFields = [];
-                
-                // Title validation
-                if (!title) {
-                    errors.push('Please enter a title');
-                    errorFields.push('title');
-                    titleInput.classList.add('error');
-                } else if (title.length < 5) {
-                    errors.push('Title must be at least 5 characters');
-                    errorFields.push('title');
-                    titleInput.classList.add('error');
-                } else if (title.length > 100) {
-                    errors.push('Title cannot exceed 100 characters');
-                    errorFields.push('title');
-                    titleInput.classList.add('error');
-                } else {
-                    titleInput.classList.add('success');
-                }
-                
-                // Description validation
-                if (!description) {
-                    errors.push('Please enter a description');
-                    errorFields.push('description');
-                    descriptionInput.classList.add('error');
-                } else if (description.length < 20) {
-                    errors.push('Description must be at least 20 characters');
-                    errorFields.push('description');
-                    descriptionInput.classList.add('error');
-                } else if (description.length > 2000) {
-                    errors.push('Description cannot exceed 2000 characters');
-                    errorFields.push('description');
-                    descriptionInput.classList.add('error');
-                } else {
-                    descriptionInput.classList.add('success');
-                }
-                
-                // Price validation
-                if (!priceStr) {
-                    errors.push('Please enter a price');
-                    errorFields.push('price');
-                    priceInput.classList.add('error');
-                } else if (isNaN(price)) {
-                    errors.push('Price must be a valid number');
-                    errorFields.push('price');
-                    priceInput.classList.add('error');
-                } else if (price < 50) {
-                    errors.push('Price must be at least $50');
-                    errorFields.push('price');
-                    priceInput.classList.add('error');
-                } else if (price > 10000) {
-                    errors.push('Price cannot exceed $10,000');
-                    errorFields.push('price');
-                    priceInput.classList.add('error');
-                } else {
-                    priceInput.classList.add('success');
-                }
-                
-                // Location validation
-                if (!location) {
-                    errors.push('Please enter a location');
-                    errorFields.push('location');
-                    locationInput.classList.add('error');
-                } else if (location.length < 4) {
-                    errors.push('Location must be at least 4 characters');
-                    errorFields.push('location');
-                    locationInput.classList.add('error');
-                } else if (location.length > 200) {
-                    errors.push('Location cannot exceed 200 characters');
-                    errorFields.push('location');
-                    locationInput.classList.add('error');
-                } else {
-                    locationInput.classList.add('success');
-                }
-                
-                // Country validation
-                if (!country) {
-                    errors.push('Please enter a country');
-                    errorFields.push('country');
-                    countryInput.classList.add('error');
-                } else if (country.length < 4) {
-                    errors.push('Country must be at least 4 characters');
-                    errorFields.push('country');
-                    countryInput.classList.add('error');
-                } else if (country.length > 100) {
-                    errors.push('Country cannot exceed 100 characters');
-                    errorFields.push('country');
-                    countryInput.classList.add('error');
-                } else {
-                    countryInput.classList.add('success');
-                }
-                
-                // File validation
-                if (selectedFiles.length === 0) {
-                    errors.push('Please upload at least one media file (image or video)');
-                    errorFields.push('media');
-                }
-                
-                // If there are errors, show them and prevent submission
-                if (errors.length > 0) {
-                    // Show errors in client alert
-                    clientAlert.className = 'alert alert-danger alert-dismissible fade show';
-                    clientAlert.innerHTML = `
+            // Location validation
+            if (!location) {
+                errors.push('Please enter a location');
+                errorFields.push('location');
+                locationInput.classList.add('error');
+            } else if (location.length < 4) {
+                errors.push('Location must be at least 4 characters');
+                errorFields.push('location');
+                locationInput.classList.add('error');
+            } else if (location.length > 200) {
+                errors.push('Location cannot exceed 200 characters');
+                errorFields.push('location');
+                locationInput.classList.add('error');
+            } else {
+                locationInput.classList.add('success');
+            }
+            
+            // Country validation
+            if (!country) {
+                errors.push('Please enter a country');
+                errorFields.push('country');
+                countryInput.classList.add('error');
+            } else if (country.length < 4) {
+                errors.push('Country must be at least 4 characters');
+                errorFields.push('country');
+                countryInput.classList.add('error');
+            } else if (country.length > 100) {
+                errors.push('Country cannot exceed 100 characters');
+                errorFields.push('country');
+                countryInput.classList.add('error');
+            } else {
+                countryInput.classList.add('success');
+            }
+            
+            // Media validation
+            const newItems = document.querySelectorAll('.new-media-item');
+            const totalItems = newItems.length;
+            
+            if (totalItems === 0) {
+                errors.push('At least one media file is required');
+            }
+            
+            // If there are errors, show them and prevent submission
+            if (errors.length > 0) {
+                clientAlert.innerHTML = `
+                    <div class="alert-content">
                         <strong>Please fix the following ${errors.length === 1 ? 'error' : 'errors'}:</strong>
-                        <ul class="mb-0 mt-2">
+                        <ul>
                             ${errors.map(error => `<li>${error}</li>`).join('')}
                         </ul>
-                        <button type="button" class="btn-close" id="closeErrorBtn" aria-label="Close"></button>
-                    `;
-                    clientAlert.style.display = 'block';
-                    
-                    // Add event listener to close button - HARD REFRESH PAGE
-                    document.getElementById('closeErrorBtn').addEventListener('click', function() {
-                        // Force hard refresh of the page
-                        window.location.reload(true);
+                    </div>
+                    <button type="button" class="close-btn" id="closeAlertBtn" aria-label="Close">×</button>
+                `;
+                clientAlert.style.display = 'block';
+                
+                // Add click event to X button for HARD REFRESH
+                const closeButton = document.getElementById('closeAlertBtn');
+                if (closeButton) {
+                    closeButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Perform hard refresh
+                        hardRefreshPage();
                     });
-                    
-                    // Focus on first error field
-                    if (errorFields.length > 0) {
-                        const firstErrorField = document.getElementById(errorFields[0]);
-                        if (firstErrorField) {
-                            firstErrorField.focus();
-                        }
-                    }
-                    
-                    return false;
                 }
                 
-                // If no errors, submit the form
-                // Show loading state
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating Listing...';
-                
-                // Submit the form
-                listingForm.submit();
-            });
-            
-            // Clear alert when user starts typing in any field
-            [titleInput, descriptionInput, priceInput, locationInput, countryInput].forEach(input => {
-                input.addEventListener('input', function() {
-                    if (clientAlert.style.display === 'block') {
-                        clientAlert.style.display = 'none';
-                        clientAlert.innerHTML = '';
-                        clientAlert.className = '';
+                // Focus on first error field
+                if (errorFields.length > 0) {
+                    const firstErrorField = document.getElementById(errorFields[0]);
+                    if (firstErrorField) {
+                        firstErrorField.focus();
                     }
-                });
-            });
+                }
+                
+                return false;
+            }
+            
+            // If no errors, submit the form
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating Listing...';
+            
+            // Submit the form
+            createForm.submit();
         });
     </script>
 </body>

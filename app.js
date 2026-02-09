@@ -1,3 +1,5 @@
+//app.js
+
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
@@ -31,8 +33,8 @@ const app = express();
 require('dotenv').config();
 
 // ==================== DATABASE CONNECTION ====================
-const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/StayFinder';
-mongoose.connect(mongoURI)
+const atlasURI = process.env.ATLAS_URL;
+mongoose.connect(atlasURI)
 .then(() => console.log('✅ MongoDB Connected Successfully'))
 .catch(err => {
     console.log('❌ MongoDB Connection Error:', err.message);
@@ -46,7 +48,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET || 'your-cookie-secret-key'));
 
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: process.env.MONGODB_URI,
+        mongoUrl: process.env.ATLAS_URL,
         ttl: 7*24 * 60 * 60
     }),
     secret: process.env.SESSION_SECRET,
@@ -908,74 +910,313 @@ const createSampleData = async () => {
             
             if (admin) {
                 const sampleListings = [
-                    {
-                        title: 'Luxury Villa in Tuscany with Vineyard Views',
-                        description: 'Stunning 5-bedroom villa with private pool, vineyard tours, and panoramic Tuscan hills views. Perfect for wine enthusiasts and luxury seekers.',
-                        price: 45000,
-                        location: 'Chianti, Tuscany',
-                        country: 'Italy',
-                        isAvailable: true,
-                        coordinates: {
-                            type: 'Point',
-                            coordinates: [11.2566, 43.5486]
-                        },
-                        owner: admin._id,
-                        media: [
-                            {
-                                url: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1200&h=800&fit=crop&crop=entropy&q=80',
-                                mediaType: 'image',
-                                filename: 'tuscany-villa-1.jpg',
-                                uploadedAt: new Date()
-                            },
-                            {
-                                url: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?w=1200&h=800&fit=crop&crop=entropy&q=80',
-                                mediaType: 'image',
-                                filename: 'tuscany-villa-2.jpg',
-                                uploadedAt: new Date()
-                            },
-                            {
-                                url: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1200&h=800&fit=crop&crop=entropy&q=80',
-                                mediaType: 'image',
-                                filename: 'tuscany-villa-3.jpg',
-                                uploadedAt: new Date()
-                            }
-                        ],
-                        reviews: [],
-                        likes: [],
-                        likesCount: 0
-                    },
-                    {
-                        title: 'Modern Alpine Chalet in Swiss Alps',
-                        description: 'Contemporary 4-bedroom chalet with floor-to-ceiling windows offering breathtaking mountain views. Features a private sauna, heated floors, and ski-in/ski-out access.',
-                        price: 52000,
-                        location: 'Zermatt, Switzerland',
-                        country: 'Switzerland',
-                        isAvailable: true,
-                        coordinates: {
-                            type: 'Point',
-                            coordinates: [7.7486, 46.0207]
-                        },
-                        owner: admin._id,
-                        media: [
-                            {
-                                url: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&h-800&fit=crop&crop=entropy&q=80',
-                                mediaType: 'image',
-                                filename: 'swiss-chalet-1.jpg',
-                                uploadedAt: new Date()
-                            },
-                            {
-                                url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h-800&fit=crop&crop=entropy&q=80',
-                                mediaType: 'image',
-                                filename: 'swiss-chalet-2.jpg',
-                                uploadedAt: new Date()
-                            }
-                        ],
-                        reviews: [],
-                        likes: [],
-                        likesCount: 0
-                    }
-                ];
-                
+    {
+        title: 'Parisian Penthouse with Eiffel Tower View',
+        description: 'Luxurious 4-bedroom penthouse in the heart of Paris featuring private terrace, designer furnishings, and panoramic city views.',
+        price: 28000,
+        location: '7th Arrondissement, Paris',
+        country: 'France',
+        isAvailable: true,
+        coordinates: {
+            type: 'Point',
+            coordinates: [2.2945, 48.8584]
+        },
+        owner: admin._id,
+        media: [
+            {
+                url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'paris-penthouse-1.jpg',
+                uploadedAt: new Date()
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'paris-penthouse-2.jpg',
+                uploadedAt: new Date()
+            }
+        ],
+        reviews: [],
+        likes: [],
+        likesCount: 0
+    },
+    {
+        title: 'Seaside Villa in Santorini',
+        description: 'Whitewashed cliffside villa with infinity pool, Caldera views, and private access to the Aegean Sea.',
+        price: 38000,
+        location: 'Oia, Santorini',
+        country: 'Greece',
+        isAvailable: true,
+        coordinates: {
+            type: 'Point',
+            coordinates: [25.3764, 36.461]
+        },
+        owner: admin._id,
+        media: [
+            {
+                url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'santorini-villa-1.jpg',
+                uploadedAt: new Date()
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'santorini-villa-2.jpg',
+                uploadedAt: new Date()
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'santorini-villa-3.jpg',
+                uploadedAt: new Date()
+            }
+        ],
+        reviews: [],
+        likes: [],
+        likesCount: 0
+    },
+    {
+        title: 'Castle Estate in Scottish Highlands',
+        description: '19th-century castle estate with 8 bedrooms, hunting grounds, private loch, and full staff including butler and chef.',
+        price: 65000,
+        location: 'Inverness-shire, Scotland',
+        country: 'United Kingdom',
+        isAvailable: true,
+        coordinates: {
+            type: 'Point',
+            coordinates: [-4.2247, 57.4778]
+        },
+        owner: admin._id,
+        media: [
+            {
+                url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'scottish-castle-1.jpg',
+                uploadedAt: new Date()
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'scottish-castle-2.jpg',
+                uploadedAt: new Date()
+            }
+        ],
+        reviews: [],
+        likes: [],
+        likesCount: 0
+    },
+    {
+        title: 'Modern Villa in Costa del Sol',
+        description: 'Architectural masterpiece with minimalist design, indoor-outdoor living, and panoramic Mediterranean sea views.',
+        price: 35000,
+        location: 'Marbella, Costa del Sol',
+        country: 'Spain',
+        isAvailable: true,
+        coordinates: {
+            type: 'Point',
+            coordinates: [-4.8859, 36.5101]
+        },
+        owner: admin._id,
+        media: [
+            {
+                url: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'spain-villa-1.jpg',
+                uploadedAt: new Date()
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'spain-villa-2.jpg',
+                uploadedAt: new Date()
+            }
+        ],
+        reviews: [],
+        likes: [],
+        likesCount: 0
+    },
+    {
+        title: 'Lake Como Waterfront Palazzo',
+        description: 'Historic palazzo directly on Lake Como with private boat dock, Venetian-style gardens, and frescoed ceilings.',
+        price: 52000,
+        location: 'Bellagio,Lake Como',
+        country: 'Italy',
+        isAvailable: true,
+        coordinates: {
+            type: 'Point',
+            coordinates: [9.2613, 45.9875]
+        },
+        owner: admin._id,
+        media: [
+            {
+                url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'lake-como-1.jpg',
+                uploadedAt: new Date()
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'lake-como-2.jpg',
+                uploadedAt: new Date()
+            }
+        ],
+        reviews: [],
+        likes: [],
+        likesCount: 0
+    },
+    {
+        title: 'Austrian Mountain Retreat with Spa',
+        description: 'Luxury wellness retreat in the Austrian Alps featuring indoor-outdoor infinity pool, full-service spa, and ski facilities.',
+        price: 29000,
+        location: 'Kitzbühel',
+        country: 'Austria',
+        isAvailable: true,
+        coordinates: {
+            type: 'Point',
+            coordinates: [12.3921, 47.4462]
+        },
+        owner: admin._id,
+        media: [
+            {
+                url: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'austrian-retreat-1.jpg',
+                uploadedAt: new Date()
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1542718610-a1d656d1884c?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'austrian-retreat-2.jpg',
+                uploadedAt: new Date()
+            }
+        ],
+        reviews: [],
+        likes: [],
+        likesCount: 0
+    },
+    {
+        title: 'Luxury Villa in Tuscany with Vineyard Views',
+        description: 'Stunning 5-bedroom villa with private pool, vineyard tours, and panoramic Tuscan hills views. Perfect for wine enthusiasts and luxury seekers.',
+        price: 45000,
+        location: 'Chianti, Tuscany',
+        country: 'Italy',
+        isAvailable: true,
+        coordinates: {
+            type: 'Point',
+            coordinates: [11.2566, 43.5486]
+        },
+        owner: admin._id,
+        media: [
+            {
+                url: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'tuscany-villa-1.jpg',
+                uploadedAt: new Date()
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1513584684374-8bab748fbf90?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'tuscany-villa-2.jpg',
+                uploadedAt: new Date()
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'tuscany-villa-3.jpg',
+                uploadedAt: new Date()
+            }
+        ],
+        reviews: [],
+        likes: [],
+        likesCount: 0
+    },
+    {
+        title: 'Modern Alpine Chalet in Swiss Alps',
+        description: 'Contemporary 4-bedroom chalet with floor-to-ceiling windows offering breathtaking mountain views. Features a private sauna, heated floors, and ski-in/ski-out access.',
+        price: 52000,
+        location: 'Zermatt, Switzerland',
+        country: 'Switzerland',
+        isAvailable: true,
+        coordinates: {
+            type: 'Point',
+            coordinates: [7.7486, 46.0207]
+        },
+        owner: admin._id,
+        media: [
+            {
+                url: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'swiss-chalet-1.jpg',
+                uploadedAt: new Date()
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'swiss-chalet-2.jpg',
+                uploadedAt: new Date()
+            }
+        ],
+        reviews: [],
+        likes: [],
+        likesCount: 0
+    },
+    {
+        title: 'Hyderabad Luxury Stay',
+        description: 'Beautiful property located in the heart of Hyderabad with modern amenities.',
+        price: 20000,
+        location: 'Hyderabad',
+        country: 'India',
+        isAvailable: true,
+        coordinates: {
+            type: 'Point',
+            coordinates: [78.4867, 17.3850]
+        },
+        owner: admin._id,
+        media: [
+            {
+                url: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'hyderabad-stay-1.jpg',
+                uploadedAt: new Date()
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'hyderabad-stay-2.jpg',
+                uploadedAt: new Date()
+            }
+        ],
+        reviews: [],
+        likes: [],
+        likesCount: 0
+    },
+    {
+        title: 'Barkas Comfort Homes',
+        description: 'Comfortable and affordable homes in the historic Barkas area of Hyderabad.',
+        price: 300,
+        location: 'Barkas, Hyderabad',
+        country: 'India',
+        isAvailable: true,
+        coordinates: {
+            type: 'Point',
+            coordinates: [78.4735, 17.3480]
+        },
+        owner: admin._id,
+        media: [
+            {
+                url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=800&fit=crop&crop=entropy&q=80',
+                mediaType: 'image',
+                filename: 'barkas-homes-1.jpg',
+                uploadedAt: new Date()
+            }
+        ],
+        reviews: [],
+        likes: [],
+        likesCount: 0
+    }
+];
                 await Listing.insertMany(sampleListings);
                 console.log(`✅ Created ${sampleListings.length} sample listings`);
             } else {
@@ -998,7 +1239,7 @@ mongoose.connection.once('open', async () => {
 
 // ==================== USER PROFILE ROUTES ====================
 
-// User profile - GET (for current user)
+// User profile - GET (for current user) - UPDATED VERSION
 app.get('/users/profile', isLoggedIn, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -1007,9 +1248,6 @@ app.get('/users/profile', isLoggedIn, async (req, res) => {
       req.flash('error', 'User not found');
       return res.redirect('/');
     }
-    
-    // Get user statistics
-    const stats = await user.getStatistics();
     
     // Get user's listings (hosted by user)
     const userListings = await Listing.find({ owner: user._id })
@@ -1021,16 +1259,50 @@ app.get('/users/profile', isLoggedIn, async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(20);
     
-    // Log for debugging
+    // Calculate total likes received for user's listings
+    let totalLikesReceived = 0;
+    
+    // Sum likes from user's listings
+    for (const listing of userListings) {
+      if (listing.likes && Array.isArray(listing.likes)) {
+        totalLikesReceived += listing.likes.length;
+      }
+    }
+    
+    // Calculate average ratings for listings
+    userListings.forEach(listing => {
+      if (listing.reviews && listing.reviews.length > 0) {
+        const totalRating = listing.reviews.reduce((sum, review) => sum + review.rating, 0);
+        listing.averageRating = totalRating / listing.reviews.length;
+        listing.reviewsCount = listing.reviews.length;
+      } else {
+        listing.averageRating = 0;
+        listing.reviewsCount = 0;
+      }
+    });
+    
+    // Calculate average ratings for liked listings
+    likedListings.forEach(listing => {
+      if (listing.reviews && listing.reviews.length > 0) {
+        const totalRating = listing.reviews.reduce((sum, review) => sum + review.rating, 0);
+        listing.averageRating = totalRating / listing.reviews.length;
+        listing.reviewsCount = listing.reviews.length;
+      } else {
+        listing.averageRating = 0;
+        listing.reviewsCount = 0;
+      }
+    });
+    
     console.log(`Profile Loaded: ${user.username}`);
     console.log(`- My Listings: ${userListings.length} listings`);
     console.log(`- Liked Listings: ${likedListings.length} listings`);
+    console.log(`- Total Likes Received: ${totalLikesReceived} likes`);
     
     res.render('users/profile', { 
       user,
-      stats,
       userListings,
       likedListings,
+      totalLikesReceived, // PASS THIS TO TEMPLATE
       isOwnProfile: true,
       title: `${user.fullName}'s Profile - StayFinder` 
     });
@@ -1041,7 +1313,7 @@ app.get('/users/profile', isLoggedIn, async (req, res) => {
   }
 });
 
-// User profile by ID - GET (for viewing other users)
+// User profile by ID - GET (for viewing other users) - UPDATED VERSION
 app.get('/users/:id/profile', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -1051,15 +1323,21 @@ app.get('/users/:id/profile', async (req, res) => {
       return res.redirect('/');
     }
     
-    // Get user statistics
-    const stats = await user.getStatistics();
-    
     // Get user's listings (hosted by user)
     const userListings = await Listing.find({ owner: user._id })
       .sort({ createdAt: -1 })
       .limit(20);
     
-    // Get listings liked by user (only show if viewing own profile or public)
+    // Calculate total likes received for user's listings
+    let totalLikesReceived = 0;
+    
+    for (const listing of userListings) {
+      if (listing.likes && Array.isArray(listing.likes)) {
+        totalLikesReceived += listing.likes.length;
+      }
+    }
+    
+    // Get listings liked by user (only show if viewing own profile)
     let likedListings = [];
     const isOwnProfile = req.isAuthenticated() && req.user.id === user.id;
     
@@ -1069,11 +1347,37 @@ app.get('/users/:id/profile', async (req, res) => {
         .limit(20);
     }
     
+    // Calculate average ratings for user's listings
+    userListings.forEach(listing => {
+      if (listing.reviews && listing.reviews.length > 0) {
+        const totalRating = listing.reviews.reduce((sum, review) => sum + review.rating, 0);
+        listing.averageRating = totalRating / listing.reviews.length;
+        listing.reviewsCount = listing.reviews.length;
+      } else {
+        listing.averageRating = 0;
+        listing.reviewsCount = 0;
+      }
+    });
+    
+    // Calculate average ratings for liked listings
+    if (isOwnProfile) {
+      likedListings.forEach(listing => {
+        if (listing.reviews && listing.reviews.length > 0) {
+          const totalRating = listing.reviews.reduce((sum, review) => sum + review.rating, 0);
+          listing.averageRating = totalRating / listing.reviews.length;
+          listing.reviewsCount = listing.reviews.length;
+        } else {
+          listing.averageRating = 0;
+          listing.reviewsCount = 0;
+        }
+      });
+    }
+    
     res.render('users/profile', { 
       user,
-      stats,
       userListings,
       likedListings,
+      totalLikesReceived, // PASS THIS TO TEMPLATE
       isOwnProfile,
       title: `${user.fullName}'s Profile - StayFinder` 
     });
@@ -1138,10 +1442,20 @@ app.get('/admin/users/:id', isLoggedIn, isAdmin, async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(10);
     
+    // Calculate total likes received for user's listings
+    let totalLikesReceived = 0;
+    
+    for (const listing of userListings) {
+      if (listing.likes && Array.isArray(listing.likes)) {
+        totalLikesReceived += listing.likes.length;
+      }
+    }
+    
     res.render('users/adminView', {
       user,
       stats,
       userListings,
+      totalLikesReceived, // Pass this to admin view as well
       isAdminView: true,
       currentUser: req.user,
       title: `${user.username} - Admin View`

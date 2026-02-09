@@ -1,496 +1,1147 @@
-<!-- views/admin/manageUsers.ejs -->
-<div class="min-h-screen bg-gray-100">
-  <!-- Admin Header with Back Button -->
-  <div class="bg-primary text-white">
-    <div class="container px-4 py-4">
-      <div class="d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center gap-3">
-          <a href="/admin/dashboard" class="btn btn-outline-light btn-sm">
-            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
-          </a>
-          <div>
-            <h1 class="h3 mb-1">Manage Users</h1>
-            <p class="mb-0 opacity-75">Search and manage all platform users</p>
-          </div>
-        </div>
-        <div class="text-end">
-          <div class="dropdown">
-            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-              <i class="fas fa-user-cog me-1"></i>Admin Actions
-            </button>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="/admin/dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Flash Messages -->
-  <% if(success && success.length > 0) { %>
-    <div class="container mt-3">
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fas fa-check-circle me-2"></i><%= success %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    </div>
-  <% } %>
-  
-  <% if(error && error.length > 0) { %>
-    <div class="container mt-3">
-      <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fas fa-exclamation-circle me-2"></i><%= error %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    </div>
-  <% } %>
-
-  <!-- Main Content -->
-  <div class="container py-4">
-    
-    <!-- Stats Cards -->
-    <div class="row g-3 mb-4">
-      <div class="col-md-3 col-sm-6">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h6 class="text-muted mb-2">Total Users</h6>
-                <h2 class="mb-0"><%= users.length %></h2>
-                <small class="text-success"><i class="fas fa-arrow-up"></i> All time</small>
-              </div>
-              <div class="bg-primary bg-opacity-10 p-2 rounded-circle">
-                <i class="fas fa-users fa-lg text-primary"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col-md-3 col-sm-6">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h6 class="text-muted mb-2">Admins</h6>
-                <h2 class="mb-0"><%= users.filter(u => u.role === 'admin').length %></h2>
-                <small class="text-warning"><i class="fas fa-crown"></i> Platform managers</small>
-              </div>
-              <div class="bg-warning bg-opacity-10 p-2 rounded-circle">
-                <i class="fas fa-crown fa-lg text-warning"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col-md-3 col-sm-6">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h6 class="text-muted mb-2">Active Today</h6>
-                <h2 class="mb-0">
-                  <% 
-                    const today = new Date();
-                    let activeToday = 0;
-                    users.forEach(u => {
-                      if (u.lastLogin) {
-                        const lastLogin = new Date(u.lastLogin);
-                        if (lastLogin.toDateString() === today.toDateString()) {
-                          activeToday++;
-                        }
-                      }
-                    });
-                  %>
-                  <%= activeToday %>
-                </h2>
-                <small class="text-info"><i class="fas fa-clock"></i> Last 24 hours</small>
-              </div>
-              <div class="bg-info bg-opacity-10 p-2 rounded-circle">
-                <i class="fas fa-user-check fa-lg text-info"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col-md-3 col-sm-6">
-        <div class="card border-0 shadow-sm h-100">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h6 class="text-muted mb-2">New Users</h6>
-                <h2 class="mb-0">
-                  <%
-                    const last7Days = new Date();
-                    last7Days.setDate(last7Days.getDate() - 7);
-                    let newUsers = 0;
-                    users.forEach(u => {
-                      if (new Date(u.createdAt) > last7Days) {
-                        newUsers++;
-                      }
-                    });
-                  %>
-                  <%= newUsers %>
-                </h2>
-                <small class="text-success"><i class="fas fa-user-plus"></i> Last 7 days</small>
-              </div>
-              <div class="bg-success bg-opacity-10 p-2 rounded-circle">
-                <i class="fas fa-user-plus fa-lg text-success"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Search and Filter Bar -->
-    <div class="card border-0 shadow-sm mb-4">
-      <div class="card-body">
-        <div class="row g-3">
-          <div class="col-md-8">
-            <div class="input-group">
-              <span class="input-group-text bg-light border-end-0">
-                <i class="fas fa-search text-muted"></i>
-              </span>
-              <input 
-                type="text" 
-                id="userSearch" 
-                class="form-control border-start-0" 
-                placeholder="Search users by name, email, or username..."
-                onkeyup="filterUsers()"
-              >
-              <button class="btn btn-outline-secondary" type="button" onclick="clearSearch()">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="input-group">
-              <span class="input-group-text bg-light border-end-0">
-                <i class="fas fa-filter text-muted"></i>
-              </span>
-              <select id="roleFilter" class="form-select border-start-0" onchange="filterUsers()">
-                <option value="all">All Roles</option>
-                <option value="admin">Admins Only</option>
-                <option value="user">Users Only</option>
-              </select>
-            </div>
-          </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users | StayFinder Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3a86ff;
+            --primary-dark: #2667cc;
+            --secondary: #8338ec;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fb;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* Main Content */
+        .main-content {
+            width: 100%;
+            padding: 0;
+        }
+        
+        /* Topbar */
+        .topbar {
+            background-color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            margin-bottom: 30px;
+        }
+        
+        .page-title h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        
+        .page-title p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: #15202B;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .user-details h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .user-details p {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        /* Content Container */
+        .content-container {
+            padding: 0 40px 40px;
+            width: 100%;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border-left: 5px solid var(--primary);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card.users {
+            border-left-color: var(--primary);
+        }
+        
+        .stat-card.admins {
+            border-left-color: var(--warning);
+        }
+        
+        .stat-card.active {
+            border-left-color: var(--success);
+        }
+        
+        .stat-card.new {
+            border-left-color: var(--secondary);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .stat-card.users .stat-icon {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+        
+        .stat-card.admins .stat-icon {
+            background: linear-gradient(135deg, var(--warning), #e6b850);
+        }
+        
+        .stat-card.active .stat-icon {
+            background: linear-gradient(135deg, var(--success), #05b185);
+        }
+        
+        .stat-card.new .stat-icon {
+            background: linear-gradient(135deg, var(--secondary), #6a11cb);
+        }
+        
+        .stat-content h3 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-content p {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        /* Search and Filters */
+        .search-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+            width: 100%;
+        }
+        
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title i {
+            color: var(--primary);
+        }
+        
+        .search-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .search-input-group {
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            border: 2px solid var(--gray-light);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        
+        .filter-select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid var(--gray-light);
+            border-radius: 10px;
+            font-size: 1rem;
+            background-color: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.1);
+        }
+        
+        .active-filters {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-light);
+        }
+        
+        .filter-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background-color: var(--light);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--dark);
+        }
+        
+        .filter-badge .close-btn {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            padding: 0;
+            font-size: 0.8rem;
+        }
+        
+        .filter-badge .close-btn:hover {
+            color: var(--danger);
+        }
+        
+        .refresh-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background-color: var(--light);
+            border: 2px solid var(--gray-light);
+            border-radius: 8px;
+            color: var(--dark);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .refresh-btn:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        /* Users Grid */
+        .users-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .users-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .users-count {
+            background-color: var(--light);
+            color: var(--dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .users-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .user-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border: 1px solid var(--gray-light);
+        }
+        
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+        
+        .user-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .user-avatar-sm {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #00BFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .user-info-sm {
+            flex: 1;
+            margin-left: 15px;
+        }
+        
+        .user-info-sm h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+        
+        .user-info-sm p {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 2px;
+        }
+        
+        .user-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .badge-admin {
+            background-color: rgba(255, 209, 102, 0.2);
+            color: #b0890b;
+        }
+        
+        .badge-user {
+            background-color: rgba(108, 117, 125, 0.15);
+            color: var(--gray);
+        }
+        
+        .badge-you {
+            background-color: rgba(6, 214, 160, 0.15);
+            color: #036d52;
+        }
+        
+        .user-details-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .detail-value {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        .btn-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border: 2px solid var(--gray-light);
+            border-radius: 8px;
+            background-color: white;
+            color: var(--dark);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.8rem;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-action.view {
+            border-color: rgba(58, 134, 255, 0.3);
+            color: var(--primary);
+        }
+        
+        .btn-action.view:hover {
+            background-color: rgba(58, 134, 255, 0.1);
+        }
+        
+        .btn-action.promote {
+            border-color: rgba(255, 209, 102, 0.3);
+            color: #b0890b;
+        }
+        
+        .btn-action.promote:hover {
+            background-color: rgba(255, 209, 102, 0.1);
+        }
+        
+        .btn-action.demote {
+            border-color: rgba(108, 117, 125, 0.3);
+            color: var(--gray);
+        }
+        
+        .btn-action.demote:hover {
+            background-color: rgba(108, 117, 125, 0.1);
+        }
+        
+        .btn-action.delete {
+            border-color: rgba(239, 71, 111, 0.3);
+            color: var(--danger);
+        }
+        
+        .btn-action.delete:hover {
+            background-color: rgba(239, 71, 111, 0.1);
+        }
+        
+        .btn-action i {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--gray);
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h4 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .empty-state p {
+            max-width: 500px;
+            margin: 0 auto;
+            font-size: 0.95rem;
+        }
+        
+        /* Alerts */
+        .alert-container {
+            width: 100%;
+            padding: 0 40px;
+            margin: 20px 0 30px;
+        }
+        
+        .alert {
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .alert-success {
+            background-color: rgba(6, 214, 160, 0.1);
+            border-left: 4px solid var(--success);
+            color: #036d52;
+        }
+        
+        .alert-danger {
+            background-color: rgba(239, 71, 111, 0.1);
+            border-left: 4px solid var(--danger);
+            color: #a61e3c;
+        }
+        
+        .close-alert {
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            color: inherit;
+            opacity: 0.7;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .close-alert:hover {
+            opacity: 1;
+        }
+        
+        /* Responsive */
+        @media (max-width: 930px) {
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 20px;
+                gap: 15px;
+            }
+            
+            .user-info {
+                align-self: stretch;
+                justify-content: space-between;
+            }
+            
+            .alert-container {
+                padding: 0 20px;
+            }
+            
+            .content-container {
+                padding: 0 20px 30px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .search-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .users-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .topbar {
+                margin-bottom: 20px;
+            }
+            
+            .card-title {
+                font-size: 1.2rem;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .stat-content h3 {
+                font-size: 1.8rem;
+            }
+            
+            .stat-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            
+            .action-buttons {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .btn-action {
+                font-size: 0.75rem;
+                padding: 8px;
+            }
+            
+            .btn-action i {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .topbar {
+                padding: 15px;
+            }
+            
+            .page-title h1 {
+                font-size: 1.5rem;
+            }
+            
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            
+            .user-details h4 {
+                font-size: 0.9rem;
+            }
+            
+            .alert-container {
+                padding: 0 15px;
+            }
+            
+            .content-container {
+                padding: 0 10px 20px;
+            }
+            
+            .search-card {
+                padding: 20px;
+            }
+            
+            .user-card {
+                padding: 20px;
+            }
+            
+            .user-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .user-info-sm {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="page-title">
+            <h1>Manage Users</h1>
+            <p>Search and manage all platform users</p>
         </div>
         
-        <!-- Quick Stats -->
-        <div class="row mt-3">
-          <div class="col-12">
-            <div class="d-flex flex-wrap gap-3">
-              <span class="badge bg-primary">
-                <i class="fas fa-users me-1"></i>Total: <%= users.length %>
-              </span>
-              <span class="badge bg-warning">
-                <i class="fas fa-crown me-1"></i>Admins: <%= users.filter(u => u.role === 'admin').length %>
-              </span>
-              <span class="badge bg-success">
-                <i class="fas fa-user me-1"></i>Regular: <%= users.filter(u => u.role === 'user').length %>
-              </span>
-              <span class="badge bg-info">
-                <i class="fas fa-clock me-1"></i>Active Today: <%= activeToday %>
-              </span>
+        <div class="user-info">
+            <div class="user-avatar">
+                <%= currentUser.firstName.charAt(0).toUpperCase() %><%= currentUser.lastName.charAt(0).toUpperCase() %>
             </div>
-          </div>
+            <div class="user-details">
+                <h4><%= currentUser.firstName %> <%= currentUser.lastName %></h4>
+                <p>Last login: <%= currentUser.lastLogin ? new Date(currentUser.lastLogin).toLocaleString() : 'Never' %></p>
+            </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Admin Actions Card -->
-    <div class="card border-0 shadow-sm mb-4">
-      <div class="card-header bg-white border-0">
-        <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Admin Actions</h5>
-      </div>
-      <div class="card-body">
-        <div class="row g-3">
-          <div class="col-md-3 col-sm-6">
-            <div class="text-center p-3 border rounded bg-light">
-              <i class="fas fa-crown fa-2x text-warning mb-2"></i>
-              <h6>Promote to Admin</h6>
-              <p class="small text-muted mb-2">Grant admin privileges to trusted users</p>
-              <span class="badge bg-warning">Elevate Role</span>
-            </div>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <div class="text-center p-3 border rounded bg-light">
-              <i class="fas fa-user-shield fa-2x text-success mb-2"></i>
-              <h6>Demote to User</h6>
-              <p class="small text-muted mb-2">Remove admin privileges if needed</p>
-              <span class="badge bg-success">Adjust Role</span>
-            </div>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <div class="text-center p-3 border rounded bg-light">
-              <i class="fas fa-trash-alt fa-2x text-danger mb-2"></i>
-              <h6>Delete User</h6>
-              <p class="small text-muted mb-2">Remove user from platform</p>
-              <span class="badge bg-danger">Permanent</span>
-            </div>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <div class="text-center p-3 border rounded bg-light">
-              <i class="fas fa-eye fa-2x text-primary mb-2"></i>
-              <h6>View Profile</h6>
-              <p class="small text-muted mb-2">Check user details and activity</p>
-              <span class="badge bg-primary">Inspect</span>
-            </div>
-          </div>
-        </div>
-        <div class="mt-3 alert alert-info">
-          <i class="fas fa-info-circle me-2"></i>
-          <strong>Note:</strong> You cannot delete or demote yourself. Admin actions are logged for security.
-        </div>
-      </div>
-    </div>
-
-    <!-- Users Grid -->
-    <div class="card border-0 shadow-sm">
-      <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">
-          <i class="fas fa-users me-2"></i>
-          All Users <span class="badge bg-secondary"><%= users.length %></span>
-        </h5>
-        <button class="btn btn-sm btn-outline-primary" onclick="refreshUsers()">
-          <i class="fas fa-sync-alt me-1"></i>Refresh
-        </button>
-      </div>
-      <div class="card-body p-0">
-        <% if (users && users.length > 0) { %>
-          <div id="usersGrid" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 p-4">
-            <% users.forEach(user => { %>
-              <div class="col user-card" data-username="<%= user.username.toLowerCase() %>" 
-                   data-email="<%= user.email.toLowerCase() %>" 
-                   data-name="<%= (user.firstName + ' ' + user.lastName).toLowerCase() %>"
-                   data-role="<%= user.role %>">
-                <div class="card h-100 border shadow-sm-hover">
-                  <div class="card-body">
-                    <!-- User Header -->
-                    <div class="d-flex align-items-start mb-3">
-                      <div class="avatar-lg bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3">
-                        <span class="text-primary fw-bold fs-4"><%= user.username.charAt(0).toUpperCase() %></span>
-                      </div>
-                      <div class="flex-grow-1">
-                        <h6 class="card-title mb-1">
-                          <%= user.firstName %> <%= user.lastName %>
-                          <% if (user._id.toString() === currentUser._id.toString()) { %>
-                            <span class="badge bg-info ms-2">You</span>
-                          <% } %>
-                        </h6>
-                        <p class="text-muted small mb-1">
-                          <i class="fas fa-at me-1"></i>@<%= user.username %>
-                        </p>
-                        <p class="text-muted small mb-0">
-                          <i class="fas fa-envelope me-1"></i><%= user.email %>
-                        </p>
-                      </div>
-                      <div class="dropdown">
-                        <button class="btn btn-sm btn-link text-muted" type="button" data-bs-toggle="dropdown">
-                          <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li>
-                            <a class="dropdown-item" href="/users/<%= user._id %>/profile">
-                              <i class="fas fa-eye me-2"></i>View Profile
-                            </a>
-                          </li>
-                          <li><hr class="dropdown-divider"></li>
-                          <% if (user._id.toString() !== currentUser._id.toString()) { %>
-                            <% if (user.role !== 'admin') { %>
-                              <li>
-                                <form action="/admin/users/<%= user._id %>/make-admin" method="POST" class="d-inline w-100">
-                                  <button type="submit" onclick="return confirm('Promote <%= user.username %> to admin?')" 
-                                    class="dropdown-item text-warning">
-                                    <i class="fas fa-crown me-2"></i>Make Admin
-                                  </button>
-                                </form>
-                              </li>
-                            <% } else { %>
-                              <li>
-                                <form action="/admin/users/<%= user._id %>/remove-admin" method="POST" class="d-inline w-100">
-                                  <button type="submit" onclick="return confirm('Remove admin role from <%= user.username %>?')" 
-                                    class="dropdown-item text-secondary">
-                                    <i class="fas fa-user me-2"></i>Remove Admin
-                                  </button>
-                                </form>
-                              </li>
-                            <% } %>
-                            <li>
-                              <form action="/admin/users/<%= user._id %>?_method=DELETE" method="POST" class="d-inline w-100">
-                                <button type="submit" onclick="return confirm('Permanently delete <%= user.username %>?')" 
-                                  class="dropdown-item text-danger">
-                                  <i class="fas fa-trash-alt me-2"></i>Delete User
-                                </button>
-                              </form>
-                            </li>
-                          <% } else { %>
-                            <li><span class="dropdown-item text-muted"><i class="fas fa-info-circle me-2"></i>Current User</span></li>
-                          <% } %>
-                        </ul>
-                      </div>
-                    </div>
-
-                    <!-- User Details -->
-                    <div class="mb-3">
-                      <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted small">Role:</span>
-                        <% if (user.role === 'admin') { %>
-                          <span class="badge bg-warning">
-                            <i class="fas fa-crown me-1"></i>Admin
-                          </span>
-                        <% } else { %>
-                          <span class="badge bg-secondary">
-                            <i class="fas fa-user me-1"></i>User
-                          </span>
-                        <% } %>
-                      </div>
-                      <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted small">Member Since:</span>
-                        <span class="small">
-                          <%= user.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
-                        </span>
-                      </div>
-                      <div class="d-flex justify-content-between">
-                        <span class="text-muted small">Last Login:</span>
-                        <span class="small">
-                          <% if (user.lastLogin) { %>
-                            <%= new Date(user.lastLogin).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %>
-                          <% } else { %>
-                            <span class="text-muted">Never</span>
-                          <% } %>
-                        </span>
-                      </div>
-                    </div>
-
-                    <!-- Phone Number -->
-                    <% if (user.phone && user.phone.trim() !== '') { %>
-                      <div class="border-top pt-3">
-                        <p class="small mb-1">
-                          <i class="fas fa-phone me-1"></i>
-                          <%= user.phone %>
-                        </p>
-                      </div>
-                    <% } %>
-
-                    <!-- Action Buttons -->
-                    <div class="d-flex gap-2 mt-3">
-                      <a href="/users/<%= user._id %>/profile" class="btn btn-outline-primary btn-sm flex-fill">
-                        <i class="fas fa-eye me-1"></i>View
-                      </a>
-                      <% if (user._id.toString() !== currentUser._id.toString()) { %>
-                        <% if (user.role !== 'admin') { %>
-                          <form action="/admin/users/<%= user._id %>/make-admin" method="POST" class="flex-fill">
-                            <button type="submit" onclick="return confirm('Make <%= user.username %> admin?')" 
-                              class="btn btn-outline-warning btn-sm w-100">
-                              <i class="fas fa-crown"></i>
-                            </button>
-                          </form>
-                        <% } else { %>
-                          <form action="/admin/users/<%= user._id %>/remove-admin" method="POST" class="flex-fill">
-                            <button type="submit" onclick="return confirm('Remove admin role from <%= user.username %>?')" 
-                              class="btn btn-outline-secondary btn-sm w-100">
-                              <i class="fas fa-user"></i>
-                            </button>
-                          </form>
-                        <% } %>
-                        <form action="/admin/users/<%= user._id %>?_method=DELETE" method="POST" class="flex-fill">
-                          <button type="submit" onclick="return confirm('Delete <%= user.username %> permanently?')" 
-                            class="btn btn-outline-danger btn-sm w-100">
-                            <i class="fas fa-trash-alt"></i>
-                          </button>
-                        </form>
-                      <% } %>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            <% }) %>
-          </div>
-        <% } else { %>
-          <div class="text-center py-5">
-            <i class="fas fa-users fa-3x text-muted mb-3"></i>
-            <h5 class="text-muted">No Users Found</h5>
-            <p class="text-muted">There are no users registered on the platform yet.</p>
-          </div>
-        <% } %>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<style>
-  .avatar-lg {
-    width: 50px;
-    height: 50px;
-  }
-  
-  .bg-primary {
-    background-color: #0d6efd !important;
-  }
-  
-  .shadow-sm-hover:hover {
-    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
-    transition: box-shadow 0.3s ease;
-  }
-  
-  .user-card {
-    transition: transform 0.3s ease, opacity 0.3s ease;
-  }
-  
-  .user-card.hidden {
-    display: none;
-  }
-</style>
-
-<script>
-  // Search and filter functionality
-  function filterUsers() {
-    const searchTerm = document.getElementById('userSearch').value.toLowerCase();
-    const roleFilter = document.getElementById('roleFilter').value;
-    const userCards = document.querySelectorAll('.user-card');
+    </header>
     
-    userCards.forEach(card => {
-      const username = card.getAttribute('data-username');
-      const email = card.getAttribute('data-email');
-      const name = card.getAttribute('data-name');
-      const role = card.getAttribute('data-role');
-      
-      const matchesSearch = !searchTerm || 
-        username.includes(searchTerm) || 
-        email.includes(searchTerm) || 
-        name.includes(searchTerm);
-      
-      const matchesRole = roleFilter === 'all' || role === roleFilter;
-      
-      if (matchesSearch && matchesRole) {
-        card.classList.remove('hidden');
-      } else {
-        card.classList.add('hidden');
-      }
-    });
-  }
-  
-  function clearSearch() {
-    document.getElementById('userSearch').value = '';
-    document.getElementById('roleFilter').value = 'all';
-    filterUsers();
-  }
-  
-  function refreshUsers() {
-    window.location.reload();
-  }
-  
-  // Initialize
-  document.addEventListener('DOMContentLoaded', function() {
-    filterUsers();
-  });
-</script>
+    <!-- Flash Messages - Single container for all messages
+    <div class="alert-container">
+        <% if(success && success.length > 0) { %>
+            <div class="alert alert-success">
+                <span><%= success %></span>
+                <button class="close-alert">&times;</button>
+            </div>
+        <% } else if(error && error.length > 0) { %>
+            <div class="alert alert-danger">
+                <span><%= error %></span>
+                <button class="close-alert">&times;</button>
+            </div>
+        <% } %>
+    </div> -->
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-container">
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <!-- Total Users -->
+                <div class="stat-card users">
+                    <div class="stat-header">
+                        <div class="stat-content">
+                            <h3><%= users.length %></h3>
+                            <p>Total Users</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Admins -->
+                <div class="stat-card admins">
+                    <div class="stat-header">
+                        <div class="stat-content">
+                            <h3><%= users.filter(u => u.role === 'admin').length %></h3>
+                            <p>Administrators</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Active Today -->
+                <div class="stat-card active">
+                    <div class="stat-header">
+                        <div class="stat-content">
+                            <h3>
+                                <%
+                                    const today = new Date();
+                                    let activeToday = 0;
+                                    users.forEach(u => {
+                                        if (u.lastLogin) {
+                                            const lastLogin = new Date(u.lastLogin);
+                                            if (lastLogin.toDateString() === today.toDateString()) {
+                                                activeToday++;
+                                            }
+                                        }
+                                    });
+                                %>
+                                <%= activeToday %>
+                            </h3>
+                            <p>Active Today</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- New Users (Last 7 days) -->
+                <div class="stat-card new">
+                    <div class="stat-header">
+                        <div class="stat-content">
+                            <h3>
+                                <%
+                                    const last7Days = new Date();
+                                    last7Days.setDate(last7Days.getDate() - 7);
+                                    let newUsers = 0;
+                                    users.forEach(u => {
+                                        if (new Date(u.createdAt) > last7Days) {
+                                            newUsers++;
+                                        }
+                                    });
+                                %>
+                                <%= newUsers %>
+                            </h3>
+                            <p>New Users (7 days)</p>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search and Filter Section -->
+            <div class="search-card">
+                <h3 class="card-title">
+                    <i class="fas fa-search"></i>
+                    Search & Filter Users
+                </h3>
+                
+                <div class="search-container">
+                    <div class="search-input-group">
+                        <i class="fas fa-search search-icon"></i>
+                        <input 
+                            type="text" 
+                            id="userSearch" 
+                            class="search-input" 
+                            placeholder="Search by name, email, or username..."
+                            onkeyup="filterUsers()"
+                        >
+                    </div>
+                    
+                    <select id="roleFilter" class="filter-select" onchange="filterUsers()">
+                        <option value="all">All Roles</option>
+                        <option value="admin">Admins Only</option>
+                        <option value="user">Users Only</option>
+                    </select>
+                </div>
+                
+                <div class="active-filters">
+                    <div id="activeFilters" class="filter-badges">
+                        <!-- Filter badges will be added here dynamically -->
+                    </div>
+                    
+                    <button onclick="refreshUsers()" class="refresh-btn">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Users Grid -->
+            <div class="users-header">
+                <h2>
+                    <i class="fas fa-users"></i>
+                    All Users
+                    <span class="users-count"><%= users.length %> users</span>
+                </h2>
+                <div id="visibleCount" class="text-gray-600 text-sm">
+                    Showing <%= users.length %> users
+                </div>
+            </div>
+            
+            <% if (users && users.length > 0) { %>
+                <div id="usersGrid" class="users-grid">
+                    <% users.forEach(user => { %>
+                        <div class="user-card"
+                             data-username="<%= user.username.toLowerCase() %>" 
+                             data-email="<%= user.email.toLowerCase() %>" 
+                             data-name="<%= (user.firstName + ' ' + user.lastName).toLowerCase() %>"
+                             data-role="<%= user.role %>">
+                            
+                            <!-- User Header -->
+                            <div class="user-header">
+                                <div style="display: flex; align-items: center;">
+                                    <div class="user-avatar-sm">
+                                        <%= user.firstName ? user.firstName.charAt(0).toUpperCase() : user.username.charAt(0).toUpperCase() %>
+                                    </div>
+                                    <div class="user-info-sm">
+                                        <h4><%= user.firstName %> <%= user.lastName %></h4>
+                                        <p>@<%= user.username %></p>
+                                        <p><%= user.email %></p>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <% if (user.role === 'admin') { %>
+                                        <span class="user-badge badge-admin">
+                                            <i class="fas fa-crown"></i> Admin
+                                        </span>
+                                    <% } else { %>
+                                        <span class="user-badge badge-user">
+                                            <i class="fas fa-user"></i> User
+                                        </span>
+                                    <% } %>
+                                    
+                                    <% if (user._id.toString() === currentUser._id.toString()) { %>
+                                        <span class="user-badge badge-you" style="margin-top: 5px; display: block;">
+                                            <i class="fas fa-user"></i> You
+                                        </span>
+                                    <% } %>
+                                </div>
+                            </div>
+                            
+                            <!-- User Details -->
+                            <div class="user-details-grid">
+                                <% if (user.phone && user.phone.trim() !== '') { %>
+                                    <div class="detail-row">
+                                        <span class="detail-label">
+                                            <i class="fas fa-phone"></i> Phone
+                                        </span>
+                                        <span class="detail-value"><%= user.phone %></span>
+                                    </div>
+                                <% } %>
+                                
+                                <div class="detail-row">
+                                    <span class="detail-label">
+                                        <i class="fas fa-calendar-plus"></i> Joined
+                                    </span>
+                                    <span class="detail-value">
+                                        <%= user.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                                    </span>
+                                </div>
+                                
+                                <div class="detail-row">
+                                    <span class="detail-label">
+                                        <i class="fas fa-clock"></i> Last Login
+                                    </span>
+                                    <span class="detail-value">
+                                        <% if (user.lastLogin) { %>
+                                            <%= new Date(user.lastLogin).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %>
+                                        <% } else { %>
+                                            <span style="color: var(--gray);">Never</span>
+                                        <% } %>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="action-buttons">
+                                <a href="/users/<%= user._id %>/profile" class="btn-action view">
+                                    <i class="fas fa-eye"></i>
+                                    View
+                                </a>
+                                
+                                <% if (user._id.toString() !== currentUser._id.toString()) { %>
+                                    <% if (user.role !== 'admin') { %>
+                                        <form action="/admin/users/<%= user._id %>/make-admin" method="POST" style="display: contents;">
+                                            <button type="submit" 
+                                                    onclick="return confirm('Make <%= user.username %> an admin?')" 
+                                                    class="btn-action promote">
+                                                <i class="fas fa-crown"></i>
+                                                Promote
+                                            </button>
+                                        </form>
+                                    <% } else { %>
+                                        <form action="/admin/users/<%= user._id %>/remove-admin" method="POST" style="display: contents;">
+                                            <button type="submit" 
+                                                    onclick="return confirm('Remove admin role from <%= user.username %>?')" 
+                                                    class="btn-action demote">
+                                                <i class="fas fa-user"></i>
+                                                Demote
+                                            </button>
+                                        </form>
+                                    <% } %>
+                                    
+                                    <form action="/admin/users/<%= user._id %>?_method=DELETE" method="POST" style="display: contents;">
+                                        <button type="submit" 
+                                                onclick="return confirm('Permanently delete <%= user.username %>? This action cannot be undone.')" 
+                                                class="btn-action delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                            Delete
+                                        </button>
+                                    </form>
+                                <% } else { %>
+                                    <div class="btn-action" style="border-color: transparent; cursor: default; color: var(--gray);">
+                                        <i class="fas fa-info-circle"></i>
+                                        Current User
+                                    </div>
+                                    <div class="btn-action" style="border-color: transparent; cursor: default; visibility: hidden;">
+                                        <!-- Empty placeholder -->
+                                    </div>
+                                    <div class="btn-action" style="border-color: transparent; cursor: default; visibility: hidden;">
+                                        <!-- Empty placeholder -->
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-users"></i>
+                    <h4>No Users Found</h4>
+                    <p>There are no users registered on the platform yet. Users will appear here once they sign up.</p>
+                </div>
+            <% } %>
+        </div>
+    </main>
+    
+    <script>
+        // Search and filter functionality
+        function filterUsers() {
+            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+            const roleFilter = document.getElementById('roleFilter').value;
+            const userCards = document.querySelectorAll('.user-card');
+            let visibleCount = 0;
+            
+            userCards.forEach(card => {
+                const username = card.getAttribute('data-username');
+                const email = card.getAttribute('data-email');
+                const name = card.getAttribute('data-name');
+                const role = card.getAttribute('data-role');
+                
+                const matchesSearch = !searchTerm || 
+                    username.includes(searchTerm) || 
+                    email.includes(searchTerm) || 
+                    name.includes(searchTerm);
+                
+                const matchesRole = roleFilter === 'all' || role === roleFilter;
+                
+                if (matchesSearch && matchesRole) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Update visible count
+            document.getElementById('visibleCount').textContent = `Showing ${visibleCount} users`;
+            
+            // Update active filters display
+            updateActiveFilters(searchTerm, roleFilter);
+        }
+        
+        function updateActiveFilters(searchTerm, roleFilter) {
+            const filtersContainer = document.getElementById('activeFilters');
+            filtersContainer.innerHTML = '';
+            
+            if (searchTerm) {
+                const filterBadge = document.createElement('span');
+                filterBadge.className = 'filter-badge';
+                filterBadge.innerHTML = `
+                    <i class="fas fa-search"></i>
+                    Search: "${searchTerm}"
+                    <button class="close-btn" onclick="clearSearchField()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                filtersContainer.appendChild(filterBadge);
+            }
+            
+            if (roleFilter !== 'all') {
+                const roleBadge = document.createElement('span');
+                roleBadge.className = 'filter-badge';
+                const roleText = roleFilter === 'admin' ? 'Admins Only' : 'Users Only';
+                roleBadge.innerHTML = `
+                    <i class="fas fa-filter"></i>
+                    ${roleText}
+                    <button class="close-btn" onclick="clearRoleFilter()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                filtersContainer.appendChild(roleBadge);
+            }
+        }
+        
+        function clearSearchField() {
+            document.getElementById('userSearch').value = '';
+            filterUsers();
+        }
+        
+        function clearRoleFilter() {
+            document.getElementById('roleFilter').value = 'all';
+            filterUsers();
+        }
+        
+        function clearSearch() {
+            document.getElementById('userSearch').value = '';
+            document.getElementById('roleFilter').value = 'all';
+            filterUsers();
+        }
+        
+        function refreshUsers() {
+            window.location.reload();
+        }
+        
+        // Close alert functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const closeButtons = document.querySelectorAll('.close-alert');
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.alert').style.display = 'none';
+                });
+            });
+            
+            // Auto-hide alerts after 5 seconds
+            setTimeout(() => {
+                document.querySelectorAll('.alert').forEach(alert => {
+                    alert.style.opacity = '0';
+                    alert.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => {
+                        alert.style.display = 'none';
+                    }, 500);
+                });
+            }, 5000);
+            
+            // Initialize
+            filterUsers();
+        });
+    </script>
+</body>
+</html>

@@ -1,414 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  
-  <style>
-    body { 
-      font-family: 'Plus Jakarta Sans', sans-serif; 
-      background-color: #F7F7F7; 
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StayFinder - Discover Extraordinary Stays</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
-    /* Brand Theme */
-    .text-brand { color: #FF385C; }
-    .bg-brand { background-color: #FF385C; }
-    .border-brand { border-color: #FF385C; }
-    .btn-shadow { box-shadow: 0 4px 14px 0 rgba(255, 56, 92, 0.39); }
-    
-    /* Card Polish */
-    .listing-card {
-      background: white;
-      border-radius: 1.5rem;
-      padding: 1.5rem;
-      border: 1px solid #EDEDED;
-      transition: all 0.3s ease;
-    }
-    .listing-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-    }
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: white; 
+        }
+        
+        /* Brand Theme */
+        .text-brand { color: #FF385C; }
+        .bg-brand { background-color: #FF385C; }
+        .border-brand { border-color: #FF385C; }
+        .btn-shadow { box-shadow: 0 4px 14px 0 rgba(255, 56, 92, 0.39); }
+        
+        /* Card Polish */
+        .listing-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid #EDEDED;
+            transition: all 0.3s ease;
+        }
+        .listing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
 
-    /* Modern Branding Header */
-    .brand-logo {
-      font-size: 1.75rem;
-      font-weight: 900;
-      letter-spacing: -0.05em;
-      color: #1a1a1a;
-    }
+        /* Modern Branding Header */
+        .brand-logo {
+            font-size: 1.75rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            color: #1a1a1a;
+        }
 
-    /* Review Card */
-    .review-card {
-      background: white;
-      border-radius: 1.5rem;
-      padding: 2rem;
-      border: 1px solid #f0f0f0;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-    }
+        /* Review Card */
+        .review-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            border: 1px solid #f0f0f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        }
 
-    /* Map Container */
-    #map {
-      height: 500px;
-      border-radius: 1.5rem;
-      overflow: hidden;
-      border: 1px solid #EDEDED;
-      margin-top: 2rem;
-    }
+        /* Map Container */
+        #map {
+            height: 500px;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border: 1px solid #EDEDED;
+            margin-top: 2rem;
+            background: transparent !important;
+        }
 
-    /* Form Styling */
-    .form-input {
-      width: 100%;
-      padding: 1rem 1.5rem;
-      border: 2px solid #e5e7eb;
-      border-radius: 1rem;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-      background: white;
-    }
-    .form-input:focus {
-      outline: none;
-      border-color: #FF385C;
-      box-shadow: 0 0 0 3px rgba(255, 56, 92, 0.1);
-    }
+        /* Transparent map tile styling */
+        .leaflet-tile-pane {
+            opacity: 0.7;
+        }
+        
+        .leaflet-container {
+            background: transparent !important;
+        }
 
-    /* Swiper Customization */
-    .swiper-pagination-bullet-active {
-      background-color: #FF385C !important;
-    }
-    .swiper-button-next, .swiper-button-prev {
-      color: #FF385C !important;
-    }
+        /* Form Styling */
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #FF385C;
+            box-shadow: 0 0 0 3px rgba(255, 56, 92, 0.1);
+        }
 
-    /* Center Alignment Helper */
-    .section-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
+        /* Swiper Customization */
+        .swiper-pagination-bullet-active {
+            background-color: #FF385C !important;
+        }
+        .swiper-button-next, .swiper-button-prev {
+            color: #FF385C !important;
+        }
 
-    /* Seasonal Collection Cards */
-    .season-card {
-      background: white;
-      border-radius: 1.5rem;
-      overflow: hidden;
-      position: relative;
-      min-height: 400px;
-      transition: all 0.3s ease;
-      border: 1px solid #EDEDED;
-    }
-    .season-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 25px 50px rgba(0,0,0,0.1);
-      border-color: #FF385C;
-    }
-    .season-card-content {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 2rem;
-      background: linear-gradient(transparent, rgba(0,0,0,0.8));
-      color: white;
-    }
-    .season-indicator {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: white;
-      margin-bottom: 1rem;
-    }
+        /* Center Alignment Helper */
+        .section-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
 
-    /* Improved Search Bar */
-    .search-container {
-      position: relative;
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-    .search-input {
-      width: 100%;
-      padding: 1.25rem 1.5rem 1.25rem 3.5rem;
-      border: 2px solid #e5e7eb;
-      border-radius: 1.5rem;
-      font-size: 1.1rem;
-      transition: all 0.3s ease;
-      background: white;
-    }
-    .search-input:focus {
-      outline: none;
-      border-color: #FF385C;
-      box-shadow: 0 0 0 4px rgba(255, 56, 92, 0.15);
-    }
-    .search-icon {
-      position: absolute;
-      left: 1.25rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #6b7280;
-      font-size: 1.25rem;
-    }
+        /* Seasonal Collection Cards */
+        .season-card {
+            background: white;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            position: relative;
+            min-height: 400px;
+            transition: all 0.3s ease;
+            border: 1px solid #EDEDED;
+        }
+        .season-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+            border-color: #FF385C;
+        }
+        .season-card-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 2rem;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+        }
+        .season-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 1rem;
+        }
 
-    /* Stats Cards */
-    .stat-card {
-      background: white;
-      border-radius: 1.5rem;
-      padding: 2rem;
-      text-align: center;
-      border: 1px solid #EDEDED;
-      transition: all 0.3s ease;
-    }
-    .stat-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-    }
-    .stat-number {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: #FF385C;
-      margin-bottom: 0.5rem;
-    }
+        /* Improved Search Bar */
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .search-input {
+            width: 100%;
+            padding: 1.25rem 1.5rem 1.25rem 3.5rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 1.5rem;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #FF385C;
+            box-shadow: 0 0 0 4px rgba(255, 56, 92, 0.15);
+        }
+        .search-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 1.25rem;
+        }
 
-    /* Custom Map Marker */
-    .leaflet-marker-icon {
-      background: #FF385C;
-      border: 3px solid white;
-      border-radius: 50%;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    }
+        /* Stats Cards */
+        .stat-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid #EDEDED;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #FF385C;
+            margin-bottom: 0.5rem;
+        }
 
-    /* Email Form Styling */
-    .email-form-container {
-      background: white;
-      border-radius: 1.5rem;
-      padding: 3rem;
-      border: 1px solid #EDEDED;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-      position: relative;
-    }
-    .send-btn {
-      padding: 1rem 2.5rem;
-      background: #FF385C;
-      color: white;
-      border: none;
-      border-radius: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    .send-btn:hover:not(:disabled) {
-      background: #e02e4a;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 56, 92, 0.3);
-    }
-    .send-btn:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
+        /* Custom Map Marker */
+        .leaflet-marker-icon {
+            background: #FF385C;
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
 
-    /* Map Section Styling */
-    .map-section {
-      padding: 4rem 1.5rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .map-section::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.3);
-      z-index: 1;
-    }
-    
-    .map-content {
-      position: relative;
-      z-index: 2;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    
-    .map-title {
-      font-size: 3rem;
-      font-weight: 900;
-      margin-bottom: 1rem;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-    
-    .map-subtitle {
-      font-size: 1.25rem;
-      opacity: 0.9;
-      margin-bottom: 2rem;
-      max-width: 600px;
-    }
-    
-    /* Enhanced Map Controls */
-    .leaflet-control-zoom {
-      border: none !important;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-      border-radius: 12px !important;
-      overflow: hidden;
-    }
-    
-    .leaflet-control-zoom a {
-      background-color: white !important;
-      color: #333 !important;
-      border: none !important;
-      width: 44px !important;
-      height: 44px !important;
-      line-height: 44px !important;
-      font-size: 20px !important;
-      transition: all 0.2s ease !important;
-    }
-    
-    .leaflet-control-zoom a:hover {
-      background-color: #FF385C !important;
-      color: white !important;
-    }
-    
-    /* Validation Alert Styling (FORM VALIDATION) */
-    .client-alert {
-      position: relative;
-      padding: 1.25rem 3rem 1.25rem 1.25rem;
-      margin-bottom: 1.5rem;
-      border-radius: 0.75rem;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      animation: slideIn 0.3s ease;
-    }
-    
-    .client-alert.error {
-      background: linear-gradient(135deg, #f44336, #e53935);
-      color: white;
-    }
-    
-    .client-alert.success {
-      background: linear-gradient(135deg, #4CAF50, #388E3C);
-      color: white;
-    }
-    
-    .client-alert .alert-content {
-      margin-bottom: 0.75rem;
-    }
-    
-    .client-alert .alert-content strong {
-      display: block;
-      font-size: 1.1rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .client-alert .alert-content ul {
-      margin: 0;
-      padding-left: 1.5rem;
-    }
-    
-    .client-alert .alert-content li {
-      margin-bottom: 0.25rem;
-    }
-    
-    .client-alert .btn-close {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.5rem;
-      cursor: pointer;
-      padding: 0;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      transition: all 0.2s ease;
-    }
-    
-    .client-alert .btn-close:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-      transform: scale(1.1);
-    }
-    
-    /* Form Field Error/Success States */
-    .form-control.error {
-      border-color: #dc3545 !important;
-    }
-    
-    .form-control.success {
-      border-color: #198754 !important;
-    }
-    
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    /* Character Count */
-    .character-count {
-      font-size: 0.875rem;
-      color: #6c757d;
-      margin-top: 0.25rem;
-    }
-    
-    .character-count.near-limit {
-      color: #ffc107;
-    }
-    
-    .character-count.over-limit {
-      color: #dc3545;
-    }
-  </style>
+        /* Email Form Styling */
+        .email-form-container {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 3rem;
+            border: 1px solid #EDEDED;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        .send-btn {
+            padding: 1rem 2.5rem;
+            background: #FF385C;
+            color: white;
+            border: none;
+            border-radius: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .send-btn:hover:not(:disabled) {
+            background: #e02e4a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 56, 92, 0.3);
+        }
+        .send-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Map Section Styling - CHANGED TO WHITE */
+        .map-section {
+            padding: 4rem 1.5rem;
+            background: white;
+            color: #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            border-top: 1px solid #EDEDED;
+        }
+        
+        .map-title {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+        
+        .map-subtitle {
+            font-size: 1.25rem;
+            color: #666;
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+        
+        /* SINGLE ZOOM CONTROL BUTTON */
+        .single-zoom-control {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .zoom-control-button {
+            width: 44px;
+            height: 44px;
+            background-color: white;
+            border: none;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.2s ease;
+            font-size: 20px;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .zoom-control-button:hover {
+            background-color: #FF385C;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .zoom-control-button:active {
+            transform: scale(0.95);
+        }
+        
+        .zoom-in {
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .zoom-out {
+            border-radius: 0 0 12px 12px;
+        }
+        
+        /* Hide default Leaflet zoom controls */
+        .leaflet-control-zoom {
+            display: none !important;
+        }
+        
+        /* Validation Alert Styling (FORM VALIDATION) */
+        .client-alert {
+            position: relative;
+            padding: 1.25rem 3rem 1.25rem 1.25rem;
+            margin-bottom: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            animation: slideIn 0.3s ease;
+        }
+        
+        .client-alert.error {
+            background: white;
+            color: #dc3545;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .client-alert.success {
+            background: white;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .client-alert .alert-content {
+            margin-bottom: 0.75rem;
+        }
+        
+        .client-alert .alert-content strong {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .client-alert .alert-content ul {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+        
+        .client-alert .alert-content li {
+            margin-bottom: 0.25rem;
+        }
+        
+        .client-alert .btn-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #6b7280;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+        
+        .client-alert .btn-close:hover {
+            background-color: #f8f9fa;
+            color: #374151;
+        }
+        
+        /* Form Field Error/Success States */
+        .form-control.error {
+            border-color: #dc3545 !important;
+        }
+        
+        .form-control.success {
+            border-color: #198754 !important;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Character Count */
+        .character-count {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+        
+        .character-count.near-limit {
+            color: #ffc107;
+        }
+        
+        .character-count.over-limit {
+            color: #dc3545;
+        }
+
+        /* Responsive Typography */
+        @media (max-width: 767px) {
+            .map-title {
+                font-size: 2rem;
+            }
+            
+            .map-subtitle {
+                font-size: 1rem;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+            
+            .season-card {
+                min-height: 300px;
+            }
+            
+            #map {
+                height: 300px;
+            }
+            
+            .single-zoom-control {
+                bottom: 10px;
+                right: 10px;
+            }
+            
+            .zoom-control-button {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .map-title {
+                font-size: 2.5rem;
+            }
+            
+            #map {
+                height: 400px;
+            }
+        }
+    </style>
 </head>
 
-<div class="min-h-screen">
+<body class="min-h-screen">
 
-  <!-- Updated Navigation -->
-  <header class="bg-white border-b border-gray-100 px-6 lg:px-12 py-4">
-    <div class="max-w-7xl mx-auto flex justify-between items-center">
-      
-     
-      </nav>
+ 
+    
+    <!-- Mobile Menu -->
+    <div class="md:hidden hidden bg-white border-t border-gray-100 px-4 py-4" id="mobileMenu">
+      <div class="flex flex-col gap-4">
+        <a href="/listings" class="text-gray-700 hover:text-brand font-medium no-underline py-2">Browse</a>
+        <a href="/listings/new" class="text-gray-700 hover:text-brand font-medium no-underline py-2">Host</a>
+        <% if (!currentUser) { %>
+          <a href="/login" class="text-gray-700 hover:text-brand font-medium no-underline py-2">Login</a>
+          <a href="/register" class="bg-brand text-white px-6 py-2 rounded-full font-bold hover:bg-red-500 transition no-underline inline-block text-center">Sign Up</a>
+        <% } else { %>
+          <a href="/users/<%= currentUser._id %>/profile" class="text-gray-700 hover:text-brand font-medium no-underline py-2">Profile</a>
+          <% if (currentUser.role === 'admin') { %>
+            <a href="/admin/dashboard" class="text-gray-700 hover:text-brand font-medium no-underline py-2">Admin</a>
+          <% } %>
+          <a href="/logout" class="text-gray-700 hover:text-brand font-medium no-underline py-2">Logout</a>
+        <% } %>
+      </div>
     </div>
   </header>
 
   <!-- Hero Section -->
-  <section class="relative pt-24 pb-20 px-6 lg:px-12 bg-white">
+  <section class="relative pt-16 md:pt-24 pb-12 md:pb-20 px-4 lg:px-12 bg-white">
     <div class="max-w-6xl mx-auto text-center">
-      <h1 class="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-gray-900 leading-[0.9] mb-8">
-        Discover<br>Extraordinary<br><span class="text-brand">Spaces</span>
+      <h1 class="text-4xl md:text-5xl lg:text-7xl font-black tracking-tight text-gray-900 leading-[0.9] mb-6 md:mb-8">
+        Discover Extraordinary <span class="text-brand">Stays</span>
       </h1>
-      <p class="text-xl md:text-2xl text-gray-600 font-light max-w-3xl mx-auto leading-relaxed mb-10">
+      <p class="text-lg md:text-xl text-gray-600 font-light max-w-3xl mx-auto leading-relaxed mb-8 md:mb-10">
         Curated collection of architecturally significant homes and private stays worldwide.
       </p>
       
-      <div class="flex flex-wrap gap-4 justify-center">
-        <a href="/listings" class="px-10 py-4 bg-black text-white rounded-full font-bold hover:bg-gray-800 transition btn-shadow no-underline">
+      <div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
+        <a href="/listings" class="px-8 md:px-10 py-3 md:py-4 bg-black text-white rounded-full font-bold hover:bg-gray-800 transition btn-shadow no-underline text-center">
           Explore Properties
         </a>
-        <a href="/listings/new" class="px-10 py-4 bg-white border-2 border-gray-900 text-black rounded-full font-bold hover:bg-gray-50 transition no-underline">
+        <a href="/listings/new" class="px-8 md:px-10 py-3 md:py-4 bg-white border-2 border-gray-900 text-black rounded-full font-bold hover:bg-gray-50 transition no-underline text-center">
           Host Your Space
         </a>
       </div>
@@ -416,9 +498,9 @@
   </section>
 
   <!-- Stats Section -->
-  <section class="py-12 bg-white">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+  <section class="py-8 md:py-12 bg-white border-t border-gray-100">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
         <div class="stat-card">
           <div class="stat-number">5,000+</div>
           <h4 class="font-bold text-gray-900">Verified Properties</h4>
@@ -444,14 +526,14 @@
   </section>
 
   <!-- Seasonal Collections Section -->
-  <section class="py-20 px-6 lg:px-12 bg-gray-50">
+  <section class="py-12 md:py-20 px-4 lg:px-12 bg-white">
     <div class="max-w-7xl mx-auto">
-      <div class="text-center mb-16">
-        <h2 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">Seasonal Collections</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">Discover curated stays perfect for every season. Expertly selected based on climate, activities, and local experiences.</p>
+      <div class="text-center mb-12 md:mb-16">
+        <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900 mb-4">Seasonal Collections</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto text-base md:text-lg">Discover curated stays perfect for every season. Expertly selected based on climate, activities, and local experiences.</p>
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <!-- Summer Collection -->
         <a href="/listings?season=summer" class="season-card group no-underline">
           <div class="absolute inset-0">
@@ -461,7 +543,7 @@
           </div>
           <div class="season-card-content">
             <div class="season-indicator bg-orange-500">SUMMER</div>
-            <h3 class="text-2xl font-bold mb-2">Coastal Escapes</h3>
+            <h3 class="text-xl md:text-2xl font-bold mb-2">Coastal Escapes</h3>
             <p class="text-sm opacity-90">Beachfront properties with ocean access</p>
           </div>
         </a>
@@ -475,7 +557,7 @@
           </div>
           <div class="season-card-content">
             <div class="season-indicator bg-blue-500">WINTER</div>
-            <h3 class="text-2xl font-bold mb-2">Mountain Retreats</h3>
+            <h3 class="text-xl md:text-2xl font-bold mb-2">Mountain Retreats</h3>
             <p class="text-sm opacity-90">Ski-in properties with fireplaces</p>
           </div>
         </a>
@@ -489,7 +571,7 @@
           </div>
           <div class="season-card-content">
             <div class="season-indicator bg-green-500">SPRING</div>
-            <h3 class="text-2xl font-bold mb-2">Countryside Estates</h3>
+            <h3 class="text-xl md:text-2xl font-bold mb-2">Countryside Estates</h3>
             <p class="text-sm opacity-90">Properties with blooming gardens</p>
           </div>
         </a>
@@ -503,7 +585,7 @@
           </div>
           <div class="season-card-content">
             <div class="season-indicator bg-amber-600">AUTUMN</div>
-            <h3 class="text-2xl font-bold mb-2">Forest Hideaways</h3>
+            <h3 class="text-xl md:text-2xl font-bold mb-2">Forest Hideaways</h3>
             <p class="text-sm opacity-90">Cabins with seasonal foliage views</p>
           </div>
         </a>
@@ -512,217 +594,283 @@
   </section>
 
   <!-- Enhanced Customer Reviews Section -->
-  <section class="py-20 px-6 lg:px-12 bg-white">
-    <div class="max-w-7xl mx-auto">
-      <div class="text-center mb-16">
-        <h2 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">Guest Experiences</h2>
-        <p class="text-gray-600 max-w-2xl mx-auto">Read what our guests have to say about their StayFinder experiences worldwide.</p>
-      </div>
-      
-      <div class="swiper reviewSwiper">
-        <div class="swiper-wrapper">
-          <!-- Review 1 -->
-          <div class="swiper-slide">
-            <div class="review-card">
-              <div class="w-24 h-24 rounded-full overflow-hidden mb-6 border-4 border-white shadow-lg">
-                <img src="https://images.unsplash.com/photo-1494790108755-2616b786d4d1?auto=format&fit=crop&w=400&q=80" 
-                     alt="Sarah Thompson" 
-                     class="w-full h-full object-cover">
-              </div>
-              <div class="flex items-center justify-center mb-4">
-                <div class="flex text-yellow-400 mr-3">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                </div>
-                <span class="text-sm text-gray-500">2 weeks ago</span>
-              </div>
-              <p class="text-gray-600 mb-6 text-lg leading-relaxed">
-                "Absolutely stunning villa in Bali! The attention to detail was impeccable. From the infinity pool overlooking the rice fields to the personalized welcome basket - everything was perfect."
-              </p>
-              <div>
-                <h4 class="font-bold text-gray-900 text-lg">Sarah Thompson</h4>
-                <p class="text-sm text-gray-500">Stayed in Bali, Indonesia</p>
-              </div>
+<section class="py-12 md:py-20 px-4 lg:px-12 bg-white border-t border-gray-100">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-12 md:mb-16">
+      <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900 mb-4">Guest Experiences</h2>
+      <p class="text-gray-600 max-w-2xl mx-auto text-base md:text-lg leading-relaxed px-4">Read what our guests have to say about their StayFinder experiences worldwide. Our community shares honest reviews to help you make the best choice.</p>
+    </div>
+    
+    <div class="swiper reviewSwiper">
+      <div class="swiper-wrapper">
+        <!-- Review 1 -->
+        
+        
+        <!-- Review 2 -->
+        <div class="swiper-slide">
+          <div class="review-card">
+           <div class="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden mb-4 md:mb-6 shadow-lg">
+              <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80" 
+                   alt="Michael Chen" 
+                   class="w-full h-full object-cover">
             </div>
-          </div>
-          
-          <!-- Review 2 -->
-          <div class="swiper-slide">
-            <div class="review-card">
-              <div class="w-24 h-24 rounded-full overflow-hidden mb-6 border-4 border-white shadow-lg">
-                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=400&q=80" 
-                     alt="Michael Chen" 
-                     class="w-full h-full object-cover">
+            <div class="flex items-center justify-center mb-4">
+              <div class="flex text-yellow-400 mr-3">
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
               </div>
-              <div class="flex items-center justify-center mb-4">
-                <div class="flex text-yellow-400 mr-3">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                </div>
-                <span class="text-sm text-gray-500">1 month ago</span>
-              </div>
-              <p class="text-gray-600 mb-6 text-lg leading-relaxed">
-                "As a digital nomad, I need reliable, beautiful spaces to work from. The Tokyo loft I found through StayFinder exceeded all expectations. Fast WiFi and amazing city views!"
-              </p>
-              <div>
-                <h4 class="font-bold text-gray-900 text-lg">Michael Chen</h4>
-                <p class="text-sm text-gray-500">Stayed in Tokyo, Japan</p>
-              </div>
+              <span class="text-xs md:text-sm text-gray-500">1 month ago</span>
             </div>
-          </div>
-          
-          <!-- Review 3 -->
-          <div class="swiper-slide">
-            <div class="review-card">
-              <div class="w-24 h-24 rounded-full overflow-hidden mb-6 border-4 border-white shadow-lg">
-                <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80" 
-                     alt="Elena Rodriguez" 
-                     class="w-full h-full object-cover">
-              </div>
-              <div class="flex items-center justify-center mb-4">
-                <div class="flex text-yellow-400 mr-3">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                </div>
-                <span class="text-sm text-gray-500">3 days ago</span>
-              </div>
-              <p class="text-gray-600 mb-6 text-lg leading-relaxed">
-                "The mountain cabin was a dream come true. Every morning we woke up to breathtaking views. The local host recommendations were spot on. Can't wait to book our next stay!"
-              </p>
-              <div>
-                <h4 class="font-bold text-gray-900 text-lg">Elena Rodriguez</h4>
-                <p class="text-sm text-gray-500">Stayed in Swiss Alps</p>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Review 4 -->
-          <div class="swiper-slide">
-            <div class="review-card">
-              <div class="w-24 h-24 rounded-full overflow-hidden mb-6 border-4 border-white shadow-lg">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" 
-                     alt="David Wilson" 
-                     class="w-full h-full object-cover">
-              </div>
-              <div class="flex items-center justify-center mb-4">
-                <div class="flex text-yellow-400 mr-3">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                </div>
-                <span class="text-sm text-gray-500">2 months ago</span>
-              </div>
-              <p class="text-gray-600 mb-6 text-lg leading-relaxed">
-                "Perfect family vacation! The villa had everything we needed and more. The kids loved the pool, and we appreciated the safety features. StayFinder made everything seamless."
-              </p>
-              <div>
-                <h4 class="font-bold text-gray-900 text-lg">David Wilson</h4>
-                <p class="text-sm text-gray-500">Stayed in Tuscany, Italy</p>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Review 5 -->
-          <div class="swiper-slide">
-            <div class="review-card">
-              <div class="w-24 h-24 rounded-full overflow-hidden mb-6 border-4 border-white shadow-lg">
-                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" 
-                     alt="Jessica Parker" 
-                     class="w-full h-full object-cover">
-              </div>
-              <div class="flex items-center justify-center mb-4">
-                <div class="flex text-yellow-400 mr-3">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                </div>
-                <span class="text-sm text-gray-500">1 week ago</span>
-              </div>
-              <p class="text-gray-600 mb-6 text-lg leading-relaxed">
-                "The urban loft in Barcelona was exactly what we were looking for. Modern amenities, perfect location, and the host went above and beyond. Highly recommend StayFinder!"
-              </p>
-              <div>
-                <h4 class="font-bold text-gray-900 text-lg">Jessica Parker</h4>
-                <p class="text-sm text-gray-500">Stayed in Barcelona, Spain</p>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Review 6 -->
-          <div class="swiper-slide">
-            <div class="review-card">
-              <div class="w-24 h-24 rounded-full overflow-hidden mb-6 border-4 border-white shadow-lg">
-                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80" 
-                     alt="Robert Johnson" 
-                     class="w-full h-full object-cover">
-              </div>
-              <div class="flex items-center justify-center mb-4">
-                <div class="flex text-yellow-400 mr-3">
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                </div>
-                <span class="text-sm text-gray-500">3 weeks ago</span>
-              </div>
-              <p class="text-gray-600 mb-6 text-lg leading-relaxed">
-                "Exceptional service from booking to checkout. The desert retreat was spectacular with stunning sunsets. StayFinder's attention to detail sets them apart from other platforms."
-              </p>
-              <div>
-                <h4 class="font-bold text-gray-900 text-lg">Robert Johnson</h4>
-                <p class="text-sm text-gray-500">Stayed in Sedona, USA</p>
-              </div>
+            <p class="text-gray-600 mb-4 md:mb-6 text-base md:text-lg leading-relaxed px-2">
+              "As a digital nomad, I need reliable, beautiful spaces to work from. The Tokyo loft I found through StayFinder exceeded all expectations. Fast WiFi and amazing city views!"
+            </p>
+            <div>
+              <h4 class="font-bold text-gray-900 text-lg">Michael Chen</h4>
+              <p class="text-sm text-gray-500">Stayed in Tokyo, Japan</p>
             </div>
           </div>
         </div>
         
-        <!-- Navigation buttons -->
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-pagination"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Interactive Map Section -->
-  <section class="map-section">
-    <div class="map-content">
-      <div class="text-center mb-12">
-        <h2 class="map-title">Explore Our Global Properties</h2>
-        <p class="map-subtitle">Discover luxury stays across the world's most desirable destinations. Navigate the map to see our featured properties.</p>
+        <!-- Review 3 -->
+        <div class="swiper-slide">
+          <div class="review-card">
+           <div class="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden mb-4 md:mb-6 shadow-lg">
+              <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80" 
+                   alt="Elena Rodriguez" 
+                   class="w-full h-full object-cover">
+            </div>
+            <div class="flex items-center justify-center mb-4">
+              <div class="flex text-yellow-400 mr-3">
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+              </div>
+              <span class="text-xs md:text-sm text-gray-500">3 days ago</span>
+            </div>
+            <p class="text-gray-600 mb-4 md:mb-6 text-base md:text-lg leading-relaxed px-2">
+              "The mountain cabin was a dream come true. Every morning we woke up to breathtaking views. The local host recommendations were spot on. Can't wait to book our next stay!"
+            </p>
+            <div>
+              <h4 class="font-bold text-gray-900 text-lg">Elena Rodriguez</h4>
+              <p class="text-sm text-gray-500">Stayed in Swiss Alps</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- NEW REVIEW 4 -->
+        <div class="swiper-slide">
+          <div class="review-card">
+           <div class="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden mb-4 md:mb-6 shadow-lg">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80" 
+                   alt="David Wilson" 
+                   class="w-full h-full object-cover">
+            </div>
+            <div class="flex items-center justify-center mb-4">
+              <div class="flex text-yellow-400 mr-3">
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+              </div>
+              <span class="text-xs md:text-sm text-gray-500">1 week ago</span>
+            </div>
+            <p class="text-gray-600 mb-4 md:mb-6 text-base md:text-lg leading-relaxed px-2">
+              "Perfect for our family vacation! The villa had everything we needed. The kids loved the pool, and we appreciated the safety features. StayFinder made everything seamless from booking to checkout."
+            </p>
+            <div>
+              <h4 class="font-bold text-gray-900 text-lg">David Wilson</h4>
+              <p class="text-sm text-gray-500">Stayed in Tuscany, Italy</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- NEW REVIEW 5 -->
+        <div class="swiper-slide">
+          <div class="review-card">
+            <div class="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden mb-4 md:mb-6 shadow-lg">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80" 
+                   alt="Jessica Parker" 
+                   class="w-full h-full object-cover">
+            </div>
+            <div class="flex items-center justify-center mb-4">
+              <div class="flex text-yellow-400 mr-3">
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+              </div>
+              <span class="text-xs md:text-sm text-gray-500">3 days ago</span>
+            </div>
+            <p class="text-gray-600 mb-4 md:mb-6 text-base md:text-lg leading-relaxed px-2">
+              "The urban loft in Barcelona was exactly what we were looking for. Modern amenities, perfect location, and the host went above and beyond. Highly recommend StayFinder for city stays!"
+            </p>
+            <div>
+              <h4 class="font-bold text-gray-900 text-lg">Jessica Parker</h4>
+              <p class="text-sm text-gray-500">Stayed in Barcelona, Spain</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- NEW REVIEW 6 -->
+        <div class="swiper-slide">
+          <div class="review-card">
+            <div class="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden mb-4 md:mb-6 shadow-lg">
+              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80" 
+                   alt="Robert Johnson" 
+                   class="w-full h-full object-cover">
+            </div>
+            <div class="flex items-center justify-center mb-4">
+              <div class="flex text-yellow-400 mr-3">
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+              </div>
+              <span class="text-xs md:text-sm text-gray-500">2 weeks ago</span>
+            </div>
+            <p class="text-gray-600 mb-4 md:mb-6 text-base md:text-lg leading-relaxed px-2">
+              "Exceptional service from booking to checkout. The desert retreat was spectacular with stunning sunsets every evening. StayFinder's attention to detail sets them apart."
+            </p>
+            <div>
+              <h4 class="font-bold text-gray-900 text-lg">Robert Johnson</h4>
+              <p class="text-sm text-gray-500">Stayed in Sedona, Arizona</p>
+            </div>
+          </div>
+        </div>
       </div>
       
-      <div id="map"></div>
+      <!-- Navigation buttons -->
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-pagination"></div>
     </div>
-  </section>
+  </div>
+</section>
+
+
+  <!-- Interactive Map Section - UPDATED TO WHITE BACKGROUND -->
+ <!-- Interactive Map Section - Redesigned -->
+<section class="map-section">
+  <div class="max-w-7xl mx-auto px-4 lg:px-12">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-center">
+      <!-- Left Column: Content -->
+      <div class="lg:col-span-5">
+        <div class="text-left">
+          <h2 class="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-gray-900 mb-4 lg:mb-6 leading-tight">
+            Explore Our<br><span class="text-brand">Global Properties</span>
+          </h2>
+          
+          <div class="space-y-4 md:space-y-6">
+            <p class="text-gray-600 text-base md:text-lg leading-relaxed">
+              Discover luxury stays across the world's most desirable destinations. Our curated collection spans continents, offering unique experiences from urban lofts to remote retreats.
+            </p>
+            
+            <div class="flex flex-col gap-3 md:gap-4">
+              <div class="flex items-start gap-3">
+                <div class="flex-shrink-0 mt-1">
+                  <div class="w-6 h-6 rounded-full bg-brand flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4-4-4-4"/>
+                    </svg>
+                  </div>
+                </div>
+                <p class="text-gray-600 text-sm md:text-base leading-relaxed">
+                  <span class="font-semibold text-gray-900">Navigate the interactive map</span> to explore featured properties worldwide
+                </p>
+              </div>
+              
+              <div class="flex items-start gap-3">
+                <div class="flex-shrink-0 mt-1">
+                  <div class="w-6 h-6 rounded-full bg-brand flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                  </div>
+                </div>
+                <p class="text-gray-600 text-sm md:text-base leading-relaxed">
+                  <span class="font-semibold text-gray-900">Click on any marker</span> to view property details and pricing
+                </p>
+              </div>
+              
+              <div class="flex items-start gap-3">
+                <div class="flex-shrink-0 mt-1">
+                  <div class="w-6 h-6 rounded-full bg-brand flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3"/>
+                    </svg>
+                  </div>
+                </div>
+                <p class="text-gray-600 text-sm md:text-base leading-relaxed">
+                  <span class="font-semibold text-gray-900">Zoom in/out</span> to explore different regions and discover hidden gems
+                </p>
+              </div>
+            </div>
+            
+            <div class="pt-4 md:pt-6">
+              <a href="/listings" class="inline-flex items-center px-6 py-3 bg-brand text-white font-semibold rounded-full hover:bg-red-500 transition duration-300 shadow-lg hover:shadow-xl">
+                <span>Explore All Properties</span>
+                <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Column: Map -->
+      <div class="lg:col-span-7">
+      
+          <div id="map" class="h-64 sm:h-80 md:h-96 lg:h-[500px] w-full"></div>
+          
+          <!-- SINGLE ZOOM CONTROL BUTTON -->
+          <div class="single-zoom-control">
+            <button id="zoomInBtn" class="zoom-control-button zoom-in" title="Zoom In">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+            </button>
+            <button id="zoomOutBtn" class="zoom-control-button zoom-out" title="Zoom Out">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Map Attribution -->
+          <div class="absolute bottom-2 left-2 z-10  backdrop-blur-sm px-3 py-1 rounded-full text-xs text-gray-600">
+            © <a href="https://www.openstreetmap.org/copyright" target="_blank" class="text-brand hover:underline">OpenStreetMap</a> contributors
+          </div>
+        </div>
+        
+        <!-- Map Stats -->
+        
+    </div>
+  </div>
+</section>
 
   <!-- Email Contact Form Section -->
-<section id="contact" class="py-20 px-6 lg:px-12 bg-gray-50">
+  <section id="contact" class="py-12 md:py-20 px-4 lg:px-12 bg-white border-t border-gray-100">
     <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-16">
-            <h2 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-4">Contact Us</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto">Have questions or need assistance? Send us a message and we'll get back to you promptly.</p>
+        <div class="text-center mb-12 md:mb-16">
+            <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-gray-900 mb-4">Contact Us</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto text-base md:text-lg">Have questions or need assistance? Send us a message and we'll get back to you promptly.</p>
         </div>
         
         <div class="email-form-container">
             <!-- Client-side validation alert -->
             <div id="clientAlert" style="display: none;"></div>
             
-            <form id="email-form" class="space-y-8">
+            <form id="email-form" class="space-y-6 md:space-y-8">
                 <!-- Email Input -->
                 <div>
                     <label for="sender-email" class="block text-sm font-medium text-gray-700 mb-3 required">
@@ -732,7 +880,7 @@
                         type="email" 
                         id="sender-email" 
                         name="senderEmail"
-                        placeholder="Enter your Browser's Logged in Mail"
+                        placeholder="Enter your email address"
                         class="form-input form-control"
                         maxlength="100"
                     >
@@ -763,7 +911,7 @@
                     <textarea 
                         id="email-message" 
                         name="emailMessage"
-                        rows="6"
+                        rows="4"
                         placeholder="Please provide details about your inquiry..."
                         class="form-input resize-none form-control"
                         maxlength="2000"
@@ -772,7 +920,7 @@
                 </div>
                 
                 <!-- Submit Button -->
-                <div class="pt-6 flex justify-center">
+                <div class="pt-4 md:pt-6 flex justify-center">
                     <button 
                         type="submit"
                         id="send-email-btn"
@@ -793,10 +941,14 @@
             </form>
             
             <!-- Success/Error Message -->
-            <div id="message-feedback" class="hidden mt-6 p-4 rounded-lg text-center"></div>
+            <div id="message-feedback" class="hidden mt-4 md:mt-6 p-4 rounded-lg text-center"></div>
         </div>
     </div>
-</section>
+  </section>
+
+  
+
+</div>
 
 <!-- Swiper JS -->
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
@@ -804,71 +956,24 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-  // FORM VALIDATION IMPLEMENTATION (like your example code)
+  // Global map variable
+  let map;
 
-  // Get form elements
-  const emailForm = document.getElementById('email-form');
-  const clientAlert = document.getElementById('clientAlert');
-  const sendBtn = document.getElementById('send-email-btn');
-  
-  // Get all form inputs
-  const emailInput = document.getElementById('sender-email');
-  const subjectInput = document.getElementById('email-subject');
-  const messageInput = document.getElementById('email-message');
-  
-  // Character counters
-  const emailCount = document.getElementById('emailCount');
-  const subjectCount = document.getElementById('subjectCount');
-  const messageCount = document.getElementById('messageCount');
-  
-  // Character counter updates
-  function updateCharacterCount(input, counter, maxLength) {
-    const length = input.value.length;
-    counter.textContent = `${length}/${maxLength} characters`;
-    
-    if (length > maxLength * 0.9) {
-      counter.className = 'character-count near-limit';
-    } else if (length > maxLength) {
-      counter.className = 'character-count over-limit';
-    } else {
-      counter.className = 'character-count';
-    }
-  }
-  
-  // Initialize character counters
-  emailInput.addEventListener('input', () => updateCharacterCount(emailInput, emailCount, 100));
-  subjectInput.addEventListener('input', () => updateCharacterCount(subjectInput, subjectCount, 200));
-  messageInput.addEventListener('input', () => updateCharacterCount(messageInput, messageCount, 2000));
-  
-  // Remove validation styling when user starts typing
-  function clearFieldStyling(input) {
-    input.classList.remove('error', 'success');
-    if (clientAlert.style.display === 'block') {
-      clientAlert.style.display = 'none';
-      clientAlert.innerHTML = '';
-      clientAlert.className = '';
-    }
-  }
-  
-  // Add input listeners to clear styling
-  [emailInput, subjectInput, messageInput].forEach(input => {
-    input.addEventListener('input', function() {
-      clearFieldStyling(this);
-    });
-  });
-  
-  // Function to force hard refresh
-  function hardRefreshPage() {
-    // Force hard refresh of the page
-    window.location.reload(true);
-  }
-  
-  // Initialize Review Carousel
+  // Mobile menu toggle
   document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    if (mobileMenuBtn && mobileMenu) {
+      mobileMenuBtn.addEventListener('click', function() {
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+
     // Initialize Swiper
     const swiper = new Swiper('.reviewSwiper', {
       slidesPerView: 1,
-      spaceBetween: 30,
+      spaceBetween: 20,
       loop: true,
       pagination: {
         el: '.swiper-pagination',
@@ -881,12 +986,15 @@
       breakpoints: {
         640: {
           slidesPerView: 1,
+          spaceBetween: 20,
         },
         768: {
           slidesPerView: 2,
+          spaceBetween: 30,
         },
         1024: {
           slidesPerView: 3,
+          spaceBetween: 30,
         },
       },
       autoplay: {
@@ -895,14 +1003,25 @@
       },
     });
 
-    // Initialize Map
-    const map = L.map('map').setView([20, 0], 2);
+    // Initialize Map with transparent background
+    map = L.map('map', {
+      center: [20, 0],
+      zoom: 2,
+      zoomControl: false, // Disable default zoom control
+      attributionControl: false // We'll add our own attribution
+    });
 
-    // Add OpenStreetMap tiles
+    // Add semi-transparent OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
+      attribution: false,
       maxZoom: 19,
+      opacity: 0.7 // Make tiles semi-transparent
     }).addTo(map);
+
+    // Add custom attribution
+    L.control.attribution({
+      position: 'bottomleft'
+    }).addTo(map).addAttribution('© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors');
 
     // Sample property locations
     const propertyLocations = [
@@ -947,214 +1066,302 @@
       marker.bindPopup(popupContent);
     });
 
-    // Add zoom control
-    L.control.zoom({
-      position: 'topright'
-    }).addTo(map);
+    // Add single zoom control buttons event listeners
+    const zoomInBtn = document.getElementById('zoomInBtn');
+    const zoomOutBtn = document.getElementById('zoomOutBtn');
+    
+    if (zoomInBtn) {
+      zoomInBtn.addEventListener('click', function() {
+        map.zoomIn();
+      });
+    }
+    
+    if (zoomOutBtn) {
+      zoomOutBtn.addEventListener('click', function() {
+        map.zoomOut();
+      });
+    }
 
     // Add scale control
     L.control.scale({
-      imperial: false
+      imperial: false,
+      position: 'bottomright'
     }).addTo(map);
   });
 
-  // Email Form Submission Handler with FORM VALIDATION
-  emailForm.addEventListener('submit', async function(event) {
-    event.preventDefault();
+  // FORM VALIDATION IMPLEMENTATION
+  // Get form elements
+  const emailForm = document.getElementById('email-form');
+  const clientAlert = document.getElementById('clientAlert');
+  const sendBtn = document.getElementById('send-email-btn');
+  
+  // Get all form inputs
+  const emailInput = document.getElementById('sender-email');
+  const subjectInput = document.getElementById('email-subject');
+  const messageInput = document.getElementById('email-message');
+  
+  // Character counters
+  const emailCount = document.getElementById('emailCount');
+  const subjectCount = document.getElementById('subjectCount');
+  const messageCount = document.getElementById('messageCount');
+  
+  // Character counter updates
+  function updateCharacterCount(input, counter, maxLength) {
+    const length = input.value.length;
+    counter.textContent = `${length}/${maxLength} characters`;
     
-    // Clear previous client alert and field styling
-    clientAlert.style.display = 'none';
-    clientAlert.innerHTML = '';
-    clientAlert.className = '';
-    
-    // Clear all field styling
-    [emailInput, subjectInput, messageInput].forEach(input => {
-      input.classList.remove('error', 'success');
-    });
-    
-    // Get values
-    const email = emailInput.value.trim();
-    const subject = subjectInput.value.trim();
-    const message = messageInput.value.trim();
-    
-    // Validation
-    const errors = [];
-    const errorFields = [];
-    
-    // Email validation
-    if (!email) {
-      errors.push('Please enter your email address');
-      errorFields.push('sender-email');
-      emailInput.classList.add('error');
+    if (length > maxLength * 0.9) {
+      counter.className = 'character-count near-limit';
+    } else if (length > maxLength) {
+      counter.className = 'character-count over-limit';
     } else {
-      // Basic email format validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        errors.push('Please enter a valid email address');
-        errorFields.push('sender-email');
-        emailInput.classList.add('error');
-      } else if (email.length > 100) {
-        errors.push('Email cannot exceed 100 characters');
+      counter.className = 'character-count';
+    }
+  }
+  
+  // Initialize character counters
+  if (emailInput) {
+    emailInput.addEventListener('input', () => updateCharacterCount(emailInput, emailCount, 100));
+    subjectInput.addEventListener('input', () => updateCharacterCount(subjectInput, subjectCount, 200));
+    messageInput.addEventListener('input', () => updateCharacterCount(messageInput, messageCount, 2000));
+  }
+  
+  // Remove validation styling when user starts typing
+  function clearFieldStyling(input) {
+    input.classList.remove('error', 'success');
+    if (clientAlert && clientAlert.style.display === 'block') {
+      clientAlert.style.display = 'none';
+      clientAlert.innerHTML = '';
+      clientAlert.className = '';
+    }
+  }
+  
+  // Add input listeners to clear styling
+  if (emailInput && subjectInput && messageInput) {
+    [emailInput, subjectInput, messageInput].forEach(input => {
+      input.addEventListener('input', function() {
+        clearFieldStyling(this);
+      });
+    });
+  }
+  
+  // Function to force hard refresh
+  function hardRefreshPage() {
+    window.location.reload(true);
+  }
+  
+  // Email Form Submission Handler
+  if (emailForm) {
+    emailForm.addEventListener('submit', async function(event) {
+      event.preventDefault();
+      
+      // Clear previous client alert and field styling
+      if (clientAlert) {
+        clientAlert.style.display = 'none';
+        clientAlert.innerHTML = '';
+        clientAlert.className = '';
+      }
+      
+      // Clear all field styling
+      if (emailInput && subjectInput && messageInput) {
+        [emailInput, subjectInput, messageInput].forEach(input => {
+          input.classList.remove('error', 'success');
+        });
+      }
+      
+      // Get values
+      const email = emailInput.value.trim();
+      const subject = subjectInput.value.trim();
+      const message = messageInput.value.trim();
+      
+      // Validation
+      const errors = [];
+      const errorFields = [];
+      
+      // Email validation
+      if (!email) {
+        errors.push('Please enter your email address');
         errorFields.push('sender-email');
         emailInput.classList.add('error');
       } else {
-        emailInput.classList.add('success');
-      }
-    }
-    
-    // Subject validation
-    if (!subject) {
-      errors.push('Please enter a subject');
-      errorFields.push('email-subject');
-      subjectInput.classList.add('error');
-    } else if (subject.length < 5) {
-      errors.push('Subject must be at least 5 characters');
-      errorFields.push('email-subject');
-      subjectInput.classList.add('error');
-    } else if (subject.length > 200) {
-      errors.push('Subject cannot exceed 200 characters');
-      errorFields.push('email-subject');
-      subjectInput.classList.add('error');
-    } else {
-      subjectInput.classList.add('success');
-    }
-    
-    // Message validation
-    if (!message) {
-      errors.push('Please enter your message');
-      errorFields.push('email-message');
-      messageInput.classList.add('error');
-    } else if (message.length < 10) {
-      errors.push('Message must be at least 10 characters');
-      errorFields.push('email-message');
-      messageInput.classList.add('error');
-    } else if (message.length > 2000) {
-      errors.push('Message cannot exceed 2000 characters');
-      errorFields.push('email-message');
-      messageInput.classList.add('error');
-    } else {
-      messageInput.classList.add('success');
-    }
-    
-    // If there are errors, show them and prevent submission
-    if (errors.length > 0) {
-      // Show errors in client alert
-      clientAlert.className = 'client-alert error';
-      clientAlert.innerHTML = `
-        <div class="alert-content">
-          <strong>Please fix the following ${errors.length === 1 ? 'error' : 'errors'}:</strong>
-          <ul class="mb-0 mt-2">
-            ${errors.map(error => `<li>${error}</li>`).join('')}
-          </ul>
-        </div>
-        <button type="button" class="btn-close" id="closeErrorBtn" aria-label="Close">×</button>
-      `;
-      clientAlert.style.display = 'block';
-      
-      // Add event listener to close button - HARD REFRESH PAGE
-      document.getElementById('closeErrorBtn').addEventListener('click', function() {
-        // Force hard refresh of the page
-        window.location.reload(true);
-      });
-      
-      // Focus on first error field
-      if (errorFields.length > 0) {
-        const firstErrorField = document.getElementById(errorFields[0]);
-        if (firstErrorField) {
-          firstErrorField.focus();
+        // Basic email format validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          errors.push('Please enter a valid email address');
+          errorFields.push('sender-email');
+          emailInput.classList.add('error');
+        } else if (email.length > 100) {
+          errors.push('Email cannot exceed 100 characters');
+          errorFields.push('sender-email');
+          emailInput.classList.add('error');
+        } else {
+          emailInput.classList.add('success');
         }
       }
       
-      return false;
-    }
-    
-    // If no errors, proceed with form submission
-    // Show loading state
-    const sendBtnText = document.getElementById('send-btn-text');
-    const sendSpinner = document.getElementById('send-spinner');
-    
-    sendBtn.disabled = true;
-    sendBtnText.textContent = 'Sending...';
-    sendSpinner.classList.remove('hidden');
-    
-    try {
-      // Prepare form data
-      const formData = {
-        senderEmail: email,
-        emailSubject: subject,
-        emailMessage: message
-      };
-      
-      // Send to your backend API endpoint
-      const response = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      });
-      
-      const result = await response.json();
-      
-      if (response.ok && result.success) {
-        // Success - show success message
-        clientAlert.className = 'client-alert success';
-        clientAlert.innerHTML = `
-          <div class="alert-content">
-            <strong>Success!</strong>
-            <p>${result.message || 'Your message has been sent successfully! We will respond within 24 hours.'}</p>
-          </div>
-          <button type="button" class="btn-close" id="closeSuccessBtn" aria-label="Close">×</button>
-        `;
-        clientAlert.style.display = 'block';
-        
-        // Reset form
-        emailForm.reset();
-        emailCount.textContent = '0/100 characters';
-        subjectCount.textContent = '0/200 characters';
-        messageCount.textContent = '0/2000 characters';
-        
-        // Add event listener to close success button - HARD REFRESH PAGE
-        document.getElementById('closeSuccessBtn').addEventListener('click', function() {
-          // Force hard refresh of the page
-          window.location.reload(true);
-        });
-        
-        // Clear field styling
-        [emailInput, subjectInput, messageInput].forEach(input => {
-          input.classList.remove('success');
-        });
+      // Subject validation
+      if (!subject) {
+        errors.push('Please enter a subject');
+        errorFields.push('email-subject');
+        subjectInput.classList.add('error');
+      } else if (subject.length < 5) {
+        errors.push('Subject must be at least 5 characters');
+        errorFields.push('email-subject');
+        subjectInput.classList.add('error');
+      } else if (subject.length > 200) {
+        errors.push('Subject cannot exceed 200 characters');
+        errorFields.push('email-subject');
+        subjectInput.classList.add('error');
       } else {
-        // Error from server
-        throw new Error(result.error || 'Failed to send message');
+        subjectInput.classList.add('success');
       }
       
-    } catch (error) {
-      console.error('Error:', error);
+      // Message validation
+      if (!message) {
+        errors.push('Please enter your message');
+        errorFields.push('email-message');
+        messageInput.classList.add('error');
+      } else if (message.length < 10) {
+        errors.push('Message must be at least 10 characters');
+        errorFields.push('email-message');
+        messageInput.classList.add('error');
+      } else if (message.length > 2000) {
+        errors.push('Message cannot exceed 2000 characters');
+        errorFields.push('email-message');
+        messageInput.classList.add('error');
+      } else {
+        messageInput.classList.add('success');
+      }
       
-      // Show error in client alert
-      clientAlert.className = 'client-alert error';
-      clientAlert.innerHTML = `
-        <div class="alert-content">
-          <strong>Error!</strong>
-          <p>${error.message || 'Failed to send message. Please try again or contact support@stayfinder.com'}</p>
-        </div>
-        <button type="button" class="btn-close" id="closeErrorBtn2" aria-label="Close">×</button>
-      `;
-      clientAlert.style.display = 'block';
+      // If there are errors, show them and prevent submission
+      if (errors.length > 0) {
+        // Show errors in client alert
+        if (clientAlert) {
+          clientAlert.className = 'client-alert error';
+          clientAlert.innerHTML = `
+            <div class="alert-content">
+              <strong>Please fix the following ${errors.length === 1 ? 'error' : 'errors'}:</strong>
+              <ul class="mb-0 mt-2">
+                ${errors.map(error => `<li>${error}</li>`).join('')}
+              </ul>
+            </div>
+            <button type="button" class="btn-close" id="closeErrorBtn" aria-label="Close">×</button>
+          `;
+          clientAlert.style.display = 'block';
+          
+          // Add event listener to close button - HARD REFRESH PAGE
+          document.getElementById('closeErrorBtn').addEventListener('click', function() {
+            hardRefreshPage();
+          });
+        }
+        
+        // Focus on first error field
+        if (errorFields.length > 0) {
+          const firstErrorField = document.getElementById(errorFields[0]);
+          if (firstErrorField) {
+            firstErrorField.focus();
+          }
+        }
+        
+        return false;
+      }
       
-      // Add event listener to close button - HARD REFRESH PAGE
-      document.getElementById('closeErrorBtn2').addEventListener('click', function() {
-        // Force hard refresh of the page
-        window.location.reload(true);
-      });
-    } finally {
-      // Reset button state
-      sendBtn.disabled = false;
-      sendBtnText.textContent = 'Send Message';
-      sendSpinner.classList.add('hidden');
-    }
-  });
+      // If no errors, proceed with form submission
+      // Show loading state
+      const sendBtnText = document.getElementById('send-btn-text');
+      const sendSpinner = document.getElementById('send-spinner');
+      
+      if (sendBtn && sendBtnText && sendSpinner) {
+        sendBtn.disabled = true;
+        sendBtnText.textContent = 'Sending...';
+        sendSpinner.classList.remove('hidden');
+      }
+      
+      try {
+        // Prepare form data
+        const formData = {
+          senderEmail: email,
+          emailSubject: subject,
+          emailMessage: message
+        };
+        
+        // Send to your backend API endpoint
+        const response = await fetch('/api/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+          // Success - show success message
+          if (clientAlert) {
+            clientAlert.className = 'client-alert success';
+            clientAlert.innerHTML = `
+              <div class="alert-content">
+                <strong>Success!</strong>
+                <p>${result.message || 'Your message has been sent successfully! We will respond within 24 hours.'}</p>
+              </div>
+              <button type="button" class="btn-close" id="closeSuccessBtn" aria-label="Close">×</button>
+            `;
+            clientAlert.style.display = 'block';
+            
+            // Reset form
+            emailForm.reset();
+            emailCount.textContent = '0/100 characters';
+            subjectCount.textContent = '0/200 characters';
+            messageCount.textContent = '0/2000 characters';
+            
+            // Add event listener to close success button - HARD REFRESH PAGE
+            document.getElementById('closeSuccessBtn').addEventListener('click', function() {
+              hardRefreshPage();
+            });
+            
+            // Clear field styling
+            if (emailInput && subjectInput && messageInput) {
+              [emailInput, subjectInput, messageInput].forEach(input => {
+                input.classList.remove('success');
+              });
+            }
+          }
+        } else {
+          // Error from server
+          throw new Error(result.error || 'Failed to send message');
+        }
+        
+      } catch (error) {
+        console.error('Error:', error);
+        
+        // Show error in client alert
+        if (clientAlert) {
+          clientAlert.className = 'client-alert error';
+          clientAlert.innerHTML = `
+            <div class="alert-content">
+              <strong>Error!</strong>
+              <p>${error.message || 'Failed to send message. Please try again or contact support@stayfinder.com'}</p>
+            </div>
+            <button type="button" class="btn-close" id="closeErrorBtn2" aria-label="Close">×</button>
+          `;
+          clientAlert.style.display = 'block';
+          
+          // Add event listener to close button - HARD REFRESH PAGE
+          document.getElementById('closeErrorBtn2').addEventListener('click', function() {
+            hardRefreshPage();
+          });
+        }
+      } finally {
+        // Reset button state
+        if (sendBtn && sendBtnText && sendSpinner) {
+          sendBtn.disabled = false;
+          sendBtnText.textContent = 'Send Message';
+          sendSpinner.classList.add('hidden');
+        }
+      }
+    });
+  }
 
   // Smooth scroll for navigation
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1172,24 +1379,6 @@
       }
     });
   });
-
-  // Old feedback function (kept for compatibility)
-  function showFeedback(message, type) {
-    const feedbackDiv = document.getElementById('message-feedback');
-    feedbackDiv.textContent = message;
-    feedbackDiv.className = 'mt-6 p-4 rounded-lg text-center';
-    
-    if (type === 'success') {
-      feedbackDiv.classList.add('bg-green-50', 'text-green-700', 'border', 'border-green-200');
-    } else {
-      feedbackDiv.classList.add('bg-red-50', 'text-red-700', 'border', 'border-red-200');
-    }
-    
-    feedbackDiv.classList.remove('hidden');
-    
-    // Auto hide after 5 seconds for success, 10 seconds for error
-    setTimeout(() => {
-      feedbackDiv.classList.add('hidden');
-    }, type === 'success' ? 5000 : 10000);
-  }
 </script>
+</body>
+</html>

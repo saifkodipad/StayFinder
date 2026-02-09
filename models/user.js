@@ -68,9 +68,18 @@ const userSchema = new mongoose.Schema({
 });
 
 // **ULTRA-SIMPLE MIDDLEWARE - NO DUPLICATES**
+// ==================== FIXED PASSWORD MIDDLEWARE ====================
+// Prevents double-hashing of already hashed passwords
 userSchema.pre("save", async function() {
-  // Only hash the password if it has been modified (or is new)
+  // Only hash if password is modified
   if (!this.isModified("password")) {
+    return;
+  }
+  
+  // CRITICAL FIX: Check if password is already bcrypt hashed
+  // bcrypt hashes always start with $2a$, $2b$, or $2y$
+  if (this.password.match(/^\$2[abxy]\$\d+\$/)) {
+    console.log('⚠️ Password appears already hashed, skipping re-hash');
     return;
   }
   
@@ -83,9 +92,39 @@ userSchema.pre("save", async function() {
   }
 });
 
+// Alternative: More robust middleware that tracks if password was already hashed
+// userSchema.pre("save", async function() {
+//   if (!this.isModified("password") || this._passwordAlreadyHashed) {
+//     return;
+//   }
+  
+//   try {
+//     const salt = await bcrypt.genSalt(12);
+//     this.password = await bcrypt.hash(this.password, salt);
+//     this._passwordAlreadyHashed = true; // Prevent re-hash in same session
+//   } catch (err) {
+//     console.error('Error hashing password:', err);
+//     throw err;
+//   }
+// });
+// ===================================================================
+
 // Method to compare passwords
 userSchema.methods.comparePassword = async function(candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
+  try {
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (err) {
+    console.error('Error comparing passwords:', err);
+    return false;
+  }
+};
+
+// Helper method to manually set hashed password (bypasses middleware check)
+userSchema.methods.setHashedPassword = async function(plainPassword) {
+  const salt = await bcrypt.genSalt(12);
+  this.password = await bcrypt.hash(plainPassword, salt);
+  this._passwordAlreadyHashed = true; // Mark as already hashed
+  return this.save();
 };
 
 // Virtual for full name
@@ -113,13 +152,8 @@ userSchema.methods.getStatistics = async function() {
       totalListingsLiked,
       totalLikesReceived
     ] = await Promise.all([
-      // 1. Total listings hosted by this user
       mongoose.model("Listing").countDocuments({ owner: user._id }),
-      
-      // 2. Total listings this user has liked
       mongoose.model("Listing").countDocuments({ likes: user._id }),
-      
-      // 3. Total likes received on user's listings
       mongoose.model("Listing").aggregate([
         { $match: { owner: user._id } },
         { $group: { 
@@ -181,6 +215,24 @@ userSchema.virtual("formattedLastLogin").get(function() {
       month: 'short',
       day: 'numeric'
     });
+  }
+});
+
+// Add toJSON transformation to remove sensitive data
+userSchema.set('toJSON', {
+  transform: function(doc, ret) {
+    delete ret.password;
+    delete ret.__v;
+    return ret;
+  }
+});
+
+// Add toObject transformation to remove sensitive data
+userSchema.set('toObject', {
+  transform: function(doc, ret) {
+    delete ret.password;
+    delete ret.__v;
+    return ret;
   }
 });
 

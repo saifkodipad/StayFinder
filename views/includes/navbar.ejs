@@ -7,264 +7,443 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Custom Airbnb Pink Theme */
+        :root {
+            --airbnb-pink: #FF5A5F;
+            --airbnb-pink-dark: #E4474C;
+            --airbnb-pink-light: #FF7C7F;
+        }
+
+        /* Smooth animations */
+        * {
+            transition: all 0.2s ease;
+        }
+
+        /* Navigation Dropdown Styles */
         .nav-dropdown {
             display: none;
             position: absolute;
             right: 0;
-            margin-top: 0.5rem;
-            width: 240px;
+            margin-top: 0.75rem;
+            width: 280px;
             background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
             z-index: 1000;
+            overflow: hidden;
         }
+        
         .nav-dropdown.show {
             display: block;
-            animation: fadeIn 0.2s ease-in-out;
+            animation: dropdownSlide 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        @keyframes dropdownSlide {
+            from { 
+                opacity: 0; 
+                transform: translateY(-12px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
         }
+
+        /* Mobile Menu Styles */
         .mobile-menu {
             display: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        
         .mobile-menu.show {
             display: block;
-            animation: slideDown 0.3s ease-in-out;
+            max-height: 1000px;
+            animation: mobileSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        @keyframes mobileSlide {
+            from { 
+                opacity: 0; 
+                transform: translateY(-16px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
         }
+
+        /* Hover Effects */
         .nav-link-hover {
-            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
-        .nav-link-hover:hover {
-            transform: translateY(-1px);
+        
+        .nav-link-hover::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--airbnb-pink);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link-hover:hover::before {
+            width: 100%;
+        }
+
+        /* Logo Animation */
+        .logo-icon {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .logo-icon:hover {
+            transform: rotate(5deg) scale(1.05);
+        }
+
+        /* Button Styles */
+        .btn-airbnb {
+            background: linear-gradient(135deg, var(--airbnb-pink) 0%, var(--airbnb-pink-dark) 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .btn-airbnb:hover {
+            background: linear-gradient(135deg, var(--airbnb-pink-dark) 0%, var(--airbnb-pink) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255, 90, 95, 0.35);
+        }
+
+        /* Mobile Menu Button Animation */
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px;
+            margin-left: auto;
+        }
+        
+        .hamburger span {
+            width: 20px;
+            height: 2px;
+            background: #1f2937;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        /* Avatar Styles */
+        .avatar-gradient {
+            background: linear-gradient(135deg, #FF5A5F 0%, #FF7C7F 100%);
+        }
+
+        /* Badge Animation */
+        .admin-badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 930px) {
+            .desktop-nav {
+                display: none !important;
+            }
+            
+            .hamburger {
+                display: flex !important;
+            }
+            
+            .nav-dropdown {
+                width: calc(100vw - 2rem);
+                left: 1rem;
+                right: 1rem;
+            }
+        }
+
+        @media (min-width: 931px) {
+            .mobile-menu {
+                display: none !important;
+            }
+            
+            .hamburger {
+                display: none !important;
+            }
+            
+            .desktop-nav {
+                display: flex !important;
+            }
+        }
+
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Focus Styles for Accessibility */
+        button:focus, a:focus {
+            outline: 2px solid var(--airbnb-pink);
+            outline-offset: 2px;
+        }
+
+        /* Backdrop for Mobile Menu */
+        .mobile-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+            backdrop-filter: blur(4px);
+        }
+        
+        .mobile-backdrop.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
 <body>
+    <!-- Mobile Backdrop -->
+    <div id="mobileBackdrop" class="mobile-backdrop" onclick="toggleMobileMenu()"></div>
+
     <!-- Navigation Bar -->
-    <nav class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <!-- Left: Logo and Desktop Menu -->
-                <div class="flex items-center">
+    <nav class="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-md">
+        <div class="w-full px-6 lg:px-12">
+            <!-- Main Navigation Container with space-between -->
+            <div class="flex justify-between items-center h-16 lg:h-20">
+                
+                <!-- LEFT GROUP: Logo + Desktop Navigation Links -->
+                <div class="flex items-center gap-8">
                     <!-- Logo -->
-                    <a href="/" class="flex items-center space-x-2 group">
-                        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-blue-200 transition-all duration-300">
-                            <i class="fas fa-home text-white text-lg"></i>
+                    <a href="/" class="flex items-center gap-3 group flex-shrink-0">
+                        <div class="w-11 h-11 lg:w-12 lg:h-12 bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-pink-200 logo-icon">
+                            <i class="fas fa-home text-white text-xl lg:text-2xl"></i>
                         </div>
-                        <div>
-                            <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">StayFinder</span>
-                            <p class="text-xs text-gray-500 -mt-1">Find your perfect stay</p>
+                        <div class="hidden sm:block">
+                            <span class="text-xl lg:text-2xl font-bold bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">StayFinder</span>
+                            <p class="text-xs text-gray-500 -mt-1 hidden lg:block">Find your perfect stay</p>
                         </div>
                     </a>
-
-                    <!-- Desktop Navigation Links -->
-                    <div class="hidden md:flex items-center ml-10 space-x-1">
-                        <a href="/" class="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-all duration-200 nav-link-hover">
-                            <i class="fas fa-home mr-2"></i>Home
-                        </a>
-                        <a href="/listings" class="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-all duration-200 nav-link-hover">
-                            <i class="fas fa-search mr-2"></i>Browse Listings
-                        </a>
-                        
-                        <% if(currentUser) { %>
-                            <a href="/listings/new" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg ml-2 nav-link-hover">
-                                <i class="fas fa-plus-circle mr-2"></i>Create Listing
-                            </a>
-                            
-                            <% if(currentUser.role === 'admin') { %>
-                                <a href="/admin/dashboard" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-semibold rounded-lg hover:from-amber-600 hover:to-amber-700 transition-all duration-200 shadow-md hover:shadow-lg ml-2 nav-link-hover">
-                                    <i class="fas fa-crown mr-2"></i>Admin Dashboard
-                                </a>
-                            <% } %>
-                        <% } %>
-                    </div>
                 </div>
 
-                <!-- Right: User Menu / Auth Buttons -->
-                <div class="flex items-center space-x-4">
-                    <% if(!currentUser) { %>
-                        <div class="hidden md:flex items-center space-x-3">
-                            <a href="/login" class="px-5 py-2 text-gray-700 hover:text-blue-600 font-medium transition-all duration-200 nav-link-hover">
-                                <i class="fas fa-sign-in-alt mr-2"></i>Login
-                            </a>
-                            <a href="/register" class="px-5 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg nav-link-hover">
-                                <i class="fas fa-user-plus mr-2"></i>Register
-                            </a>
-                        </div>
-                    <% } else { %>
-                        <div class="hidden md:flex items-center space-x-4">
-                            <!-- User Profile Dropdown -->
-                            <div class="relative">
-                                <button onclick="toggleDropdown()" class="flex items-center space-x-3 bg-gray-50 hover:bg-gray-100 px-4 py-2 rounded-xl transition-all duration-200 nav-link-hover focus:outline-none">
-                                    <div class="relative">
-                                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                <!-- Hamburger Menu Button for Mobile (always visible in markup, hidden via CSS on desktop) -->
+                <div class="hamburger hidden" id="hamburger" onclick="toggleMobileMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <!-- Desktop Navigation Links (hidden on mobile via CSS) -->
+                <div class="desktop-nav flex items-center gap-1">
+                    <!-- Navigation Links for ALL users -->
+                    <a href="/" class="px-4 py-2 text-gray-700 hover:text-pink-500 font-medium rounded-lg hover:bg-pink-50 nav-link-hover">
+                        <i class="fas fa-home mr-2"></i>Home
+                    </a>
+                    <a href="/listings" class="px-4 py-2 text-gray-700 hover:text-pink-500 font-medium rounded-lg hover:bg-pink-50 nav-link-hover">
+                        <i class="fas fa-search mr-2"></i>Browse Listings
+                    </a>
+                    
+                    <!-- User-specific links -->
+                    <% if(currentUser) { %>
+                        <!-- Logged-in User Links -->
+                        <a href="/listings/new" class="px-5 py-2.5 btn-airbnb text-white font-semibold rounded-lg shadow-md ml-2">
+                            <i class="fas fa-plus-circle mr-2"></i>Create Listing
+                        </a>
+                        
+                        <!-- Desktop User Profile Dropdown -->
+                        <div class="relative ml-2">
+                            <button onclick="toggleDropdown()" class="flex items-center gap-3 bg-white hover:bg-gray-50 px-4 py-2.5 rounded-full border-2 border-gray-200 hover:border-pink-300 shadow-sm hover:shadow-md transition-all focus:outline-none focus:border-pink-400">
+                                <i class="fas fa-bars text-gray-600 text-sm"></i>
+                                <div class="relative">
+                                    <div class="w-9 h-9 avatar-gradient rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                        <% if(currentUser.firstName) { %>
+                                            <%= currentUser.firstName.charAt(0).toUpperCase() %>
+                                        <% } else { %>
+                                            <%= currentUser.username.charAt(0).toUpperCase() %>
+                                        <% } %>
+                                    </div>
+                                    <% if(currentUser.role === 'admin') { %>
+                                        <div class="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center admin-badge">
+                                            <i class="fas fa-crown text-white text-xs"></i>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <div id="userDropdown" class="nav-dropdown">
+                                <!-- User Info Header -->
+                                <div class="p-5 bg-gradient-to-r from-pink-50 to-rose-50 border-b border-gray-100">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-12 h-12 avatar-gradient rounded-full flex items-center justify-center text-white font-bold text-lg">
                                             <% if(currentUser.firstName) { %>
                                                 <%= currentUser.firstName.charAt(0).toUpperCase() %>
                                             <% } else { %>
                                                 <%= currentUser.username.charAt(0).toUpperCase() %>
                                             <% } %>
                                         </div>
-                                        <% if(currentUser.role === 'admin') { %>
-                                            <div class="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center">
-                                                <i class="fas fa-crown text-white text-xs"></i>
-                                            </div>
-                                        <% } %>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="font-bold text-gray-800 truncate">
+                                                <%= currentUser.firstName || currentUser.username %>
+                                            </p>
+                                            <p class="text-sm text-gray-600 truncate">
+                                                <%= currentUser.email || 'No email' %>
+                                            </p>
+                                            <p class="text-xs mt-1">
+                                                <% if(currentUser.role === 'admin') { %>
+                                                    <span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full font-semibold">Admin</span>
+                                                <% } else if(currentUser.role === 'host') { %>
+                                                    <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-semibold">Host</span>
+                                                <% } else { %>
+                                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full font-semibold">User</span>
+                                                <% } %>
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div class="text-left">
-                                        <p class="font-semibold text-gray-800">
-                                            <%= currentUser.firstName || currentUser.username %>
-                                        </p>
-                                        <p class="text-xs text-gray-500">
-                                            <% if(currentUser.role === 'admin') { %>
-                                                <span class="text-amber-600 font-medium">Admin</span>
-                                            <% } else if(currentUser.role === 'host') { %>
-                                                <span class="text-blue-600 font-medium">Host</span>
-                                            <% } else { %>
-                                                <span class="text-gray-600">User</span>
-                                            <% } %>
-                                        </p>
-                                    </div>
-                                    <i class="fas fa-chevron-down text-gray-400 text-sm"></i>
-                                </button>
-
-                                <!-- Dropdown Menu -->
-                                <div id="userDropdown" class="nav-dropdown">
-                                    <div class="p-4 border-b border-gray-100">
-                                        <p class="font-semibold text-gray-800">
-                                            <%= currentUser.firstName || currentUser.username %>
-                                        </p>
-                                        <p class="text-sm text-gray-500">
-                                            <%= currentUser.email || 'No email' %>
-                                        </p>
-                                    </div>
+                                </div>
+                                
+                                <!-- Menu Items -->
+                                <div class="p-2">
+                                    <a href="/users/profile" class="flex items-center px-4 py-3 text-gray-700 hover:bg-pink-50 hover:text-pink-600 rounded-lg font-medium">
+                                        <i class="fas fa-user-circle text-pink-500 w-5 mr-3 text-lg"></i>
+                                        <span>My Profile</span>
+                                    </a>
                                     
-                                    <div class="p-2">
-                                        <a href="/users/profile" class="flex items-center px-3 py-2 text-gray-700 hover:bg-blue-50 rounded-lg transition-all duration-150 mb-1">
-                                            <i class="fas fa-user-circle text-blue-500 w-5 mr-3"></i>
-                                            <span>My Profile</span>
-                                        </a>
-                                        
-                                        <!-- REMOVED: My Listings link -->
-                                        <!-- <a href="/users/listings" class="flex items-center px-3 py-2 text-gray-700 hover:bg-blue-50 rounded-lg transition-all duration-150 mb-1">
-                                            <i class="fas fa-home text-green-500 w-5 mr-3"></i>
-                                            <span>My Listings</span>
-                                        </a> -->
-                                        
-                                        <% if(currentUser.role === 'admin') { %>
-                                            <div class="border-t border-gray-100 my-2 pt-2">
-                                                <p class="text-xs font-semibold text-gray-400 uppercase px-3 mb-2">Admin</p>
-                                                <a href="/admin/dashboard" class="flex items-center px-3 py-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-150">
-                                                    <i class="fas fa-crown text-amber-500 w-5 mr-3"></i>
-                                                    <span>Admin Dashboard</span>
-                                                </a>
-                                            </div>
-                                        <% } %>
-                                        
+                                    <% if(currentUser.role === 'admin') { %>
                                         <div class="border-t border-gray-100 my-2 pt-2">
-                                            <a href="/logout" class="flex items-center px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-150">
-                                                <i class="fas fa-sign-out-alt w-5 mr-3"></i>
-                                                <span>Logout</span>
+                                            <a href="/admin/dashboard" class="flex items-center px-4 py-3 text-amber-700 hover:bg-amber-50 rounded-lg font-medium">
+                                                <i class="fas fa-crown text-amber-500 w-5 mr-3 text-lg"></i>
+                                                <span>Admin Dashboard</span>
                                             </a>
                                         </div>
+                                    <% } %>
+                                    
+                                    <div class="border-t border-gray-100 my-2 pt-2">
+                                        <a href="/logout" class="flex items-center px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium">
+                                            <i class="fas fa-sign-out-alt w-5 mr-3 text-lg"></i>
+                                            <span>Logout</span>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        
+                    <% } else { %>
+                        <!-- Not Logged-in User Links -->
+                        <div class="flex items-center gap-3 ml-2">
+                            <a href="/login" class="px-5 py-2 text-gray-700 hover:text-pink-500 font-medium rounded-lg hover:bg-pink-50 transition-all">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Login
+                            </a>
+                            <a href="/register" class="px-5 py-2.5 btn-airbnb text-white font-semibold rounded-lg shadow-md">
+                                <i class="fas fa-user-plus mr-2"></i>Sign up
+                            </a>
+                        </div>
                     <% } %>
-
-                    <!-- Mobile Menu Button -->
-                    <button onclick="toggleMobileMenu()" class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all duration-200">
-                        <i class="fas fa-bars text-gray-700"></i>
-                    </button>
                 </div>
             </div>
 
-            <!-- Mobile Menu -->
-            <div id="mobileMenu" class="mobile-menu md:hidden bg-white rounded-lg shadow-lg border border-gray-200 mt-2 mb-4">
-                <div class="p-4 space-y-3">
-                    <a href="/" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-lg transition-all duration-150">
-                        <i class="fas fa-home text-blue-500 w-5 mr-3"></i>
-                        <span class="font-medium">Home</span>
+            <!-- Mobile Menu (hidden on desktop via CSS) -->
+            <div id="mobileMenu" class="mobile-menu lg:hidden">
+                <div class="py-4 space-y-2 bg-gray-50 rounded-2xl my-3 px-3 shadow-inner">
+                    <!-- Mobile Nav Links -->
+                    <a href="/" class="flex items-center px-4 py-3.5 text-gray-700 hover:bg-white hover:text-pink-500 rounded-xl font-medium shadow-sm">
+                        <i class="fas fa-home text-pink-500 w-6 mr-3 text-lg"></i>
+                        <span>Home</span>
                     </a>
                     
-                    <a href="/listings" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-lg transition-all duration-150">
-                        <i class="fas fa-search text-green-500 w-5 mr-3"></i>
-                        <span class="font-medium">Browse Listings</span>
+                    <a href="/listings" class="flex items-center px-4 py-3.5 text-gray-700 hover:bg-white hover:text-pink-500 rounded-xl font-medium shadow-sm">
+                        <i class="fas fa-search text-pink-500 w-6 mr-3 text-lg"></i>
+                        <span>Browse Listings</span>
                     </a>
                     
                     <% if(currentUser) { %>
-                        <a href="/listings/new" class="flex items-center px-4 py-3 text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg transition-all duration-150">
-                            <i class="fas fa-plus-circle w-5 mr-3"></i>
-                            <span class="font-medium">Create Listing</span>
+                        <!-- Logged-in User Mobile Links -->
+                        <a href="/listings/new" class="flex items-center px-4 py-3.5 text-white btn-airbnb rounded-xl font-semibold shadow-md mt-2">
+                            <i class="fas fa-plus-circle w-6 mr-3 text-lg"></i>
+                            <span>Create Listing</span>
                         </a>
                         
-                        <a href="/users/profile" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-lg transition-all duration-150">
-                            <i class="fas fa-user-circle text-purple-500 w-5 mr-3"></i>
-                            <span class="font-medium">My Profile</span>
-                        </a>
-                        
-                        <!-- REMOVED: My Listings link from mobile menu -->
-                        <!-- <a href="/users/listings" class="flex items-center px-4 py-3 text-gray-700 hover:bg-blue-50 rounded-lg transition-all duration-150">
-                            <i class="fas fa-home text-green-500 w-5 mr-3"></i>
-                            <span class="font-medium">My Listings</span>
-                        </a> -->
+                        <div class="border-t border-gray-200 my-3 pt-3">
+                            <a href="/users/profile" class="flex items-center px-4 py-3.5 text-gray-700 hover:bg-white hover:text-pink-500 rounded-xl font-medium shadow-sm">
+                                <i class="fas fa-user-circle text-pink-500 w-6 mr-3 text-lg"></i>
+                                <span>My Profile</span>
+                            </a>
+                        </div>
                         
                         <% if(currentUser.role === 'admin') { %>
-                            <a href="/admin/dashboard" class="flex items-center px-4 py-3 text-gray-700 hover:bg-amber-50 rounded-lg transition-all duration-150">
-                                <i class="fas fa-crown text-amber-500 w-5 mr-3"></i>
-                                <span class="font-medium">Admin Dashboard</span>
+                            <a href="/admin/dashboard" class="flex items-center px-4 py-3.5 text-amber-700 hover:bg-amber-50 rounded-xl font-medium shadow-sm">
+                                <i class="fas fa-crown text-amber-500 w-6 mr-3 text-lg"></i>
+                                <span>Admin Dashboard</span>
                             </a>
                         <% } %>
                         
-                        <div class="border-t border-gray-200 pt-3 mt-3">
-                            <a href="/logout" class="flex items-center px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-150">
-                                <i class="fas fa-sign-out-alt w-5 mr-3"></i>
-                                <span class="font-medium">Logout</span>
+                        <div class="border-t border-gray-200 my-3 pt-3">
+                            <a href="/logout" class="flex items-center px-4 py-3.5 text-red-600 hover:bg-red-50 rounded-xl font-medium shadow-sm">
+                                <i class="fas fa-sign-out-alt w-6 mr-3 text-lg"></i>
+                                <span>Logout</span>
                             </a>
                         </div>
-                    <% } else { %>
-                        <div class="space-y-3 pt-2">
-                            <a href="/login" class="block px-4 py-3 text-center text-gray-700 hover:bg-blue-50 rounded-lg transition-all duration-150 border border-gray-200">
-                                <i class="fas fa-sign-in-alt mr-2"></i>Login
-                            </a>
-                            <a href="/register" class="block px-4 py-3 text-center text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg transition-all duration-150">
-                                <i class="fas fa-user-plus mr-2"></i>Register
-                            </a>
-                        </div>
-                    <% } %>
-                    
-                    <% if(currentUser) { %>
-                        <div class="border-t border-gray-200 pt-3 mt-3">
-                            <div class="flex items-center px-4 py-3 bg-gray-50 rounded-lg">
-                                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold mr-3">
+
+                        <!-- Mobile User Info Card -->
+                        <div class="bg-gradient-to-r from-pink-50 to-rose-50 rounded-xl p-4 mt-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 avatar-gradient rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
                                     <% if(currentUser.firstName) { %>
                                         <%= currentUser.firstName.charAt(0).toUpperCase() %>
                                     <% } else { %>
                                         <%= currentUser.username.charAt(0).toUpperCase() %>
                                     <% } %>
                                 </div>
-                                <div>
-                                    <p class="font-semibold text-gray-800">
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-bold text-gray-800 truncate">
                                         <%= currentUser.firstName || currentUser.username %>
                                     </p>
-                                    <p class="text-xs text-gray-500">
+                                    <p class="text-sm text-gray-600 truncate">
+                                        <%= currentUser.email || 'No email' %>
+                                    </p>
+                                    <p class="text-xs mt-1">
                                         <% if(currentUser.role === 'admin') { %>
-                                            <span class="text-amber-600 font-medium">Admin</span>
+                                            <span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full font-semibold">Admin</span>
                                         <% } else if(currentUser.role === 'host') { %>
-                                            <span class="text-blue-600 font-medium">Host</span>
+                                            <span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-semibold">Host</span>
                                         <% } else { %>
-                                            <span class="text-gray-600">User</span>
+                                            <span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded-full font-semibold">User</span>
                                         <% } %>
                                     </p>
                                 </div>
                             </div>
+                        </div>
+                    <% } else { %>
+                        <!-- Not Logged-in User Mobile Links -->
+                        <div class="space-y-2 pt-2">
+                            <a href="/login" class="flex items-center justify-center px-4 py-3.5 text-gray-700 hover:bg-white rounded-xl font-semibold border-2 border-gray-300 hover:border-pink-400 shadow-sm">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Login
+                            </a>
+                            <a href="/register" class="flex items-center justify-center px-4 py-3.5 text-white btn-airbnb rounded-xl font-semibold shadow-md">
+                                <i class="fas fa-user-plus mr-2"></i>Sign up
+                            </a>
                         </div>
                     <% } %>
                 </div>
@@ -273,38 +452,98 @@
     </nav>
 
     <script>
+        // Toggle Desktop Dropdown
         function toggleDropdown() {
             const dropdown = document.getElementById('userDropdown');
             dropdown.classList.toggle('show');
         }
 
+        // Toggle Mobile Menu
         function toggleMobileMenu() {
             const mobileMenu = document.getElementById('mobileMenu');
+            const hamburger = document.getElementById('hamburger');
+            const backdrop = document.getElementById('mobileBackdrop');
+            
             mobileMenu.classList.toggle('show');
+            hamburger.classList.toggle('active');
+            backdrop.classList.toggle('show');
+            
+            // Prevent body scroll when mobile menu is open
+            if (mobileMenu.classList.contains('show')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
         }
 
+        // Close dropdown when clicking outside
         document.addEventListener('click', function(event) {
             const dropdown = document.getElementById('userDropdown');
-            const dropdownButton = event.target.closest('button');
+            const dropdownButton = event.target.closest('button[onclick="toggleDropdown()"]');
             
             if (!dropdownButton && dropdown && dropdown.classList.contains('show')) {
                 dropdown.classList.remove('show');
             }
         });
 
+        // Close mobile menu when clicking a link
         document.querySelectorAll('#mobileMenu a').forEach(link => {
             link.addEventListener('click', () => {
                 const mobileMenu = document.getElementById('mobileMenu');
+                const hamburger = document.getElementById('hamburger');
+                const backdrop = document.getElementById('mobileBackdrop');
+                
                 mobileMenu.classList.remove('show');
+                hamburger.classList.remove('active');
+                backdrop.classList.remove('show');
+                document.body.style.overflow = '';
             });
         });
 
+        // Close dropdown with Escape key
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 const dropdown = document.getElementById('userDropdown');
+                const mobileMenu = document.getElementById('mobileMenu');
+                const hamburger = document.getElementById('hamburger');
+                const backdrop = document.getElementById('mobileBackdrop');
+                
                 if (dropdown && dropdown.classList.contains('show')) {
                     dropdown.classList.remove('show');
                 }
+                
+                if (mobileMenu && mobileMenu.classList.contains('show')) {
+                    mobileMenu.classList.remove('show');
+                    hamburger.classList.remove('active');
+                    backdrop.classList.remove('show');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+
+        // Close mobile menu on window resize to desktop
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 931) {
+                const mobileMenu = document.getElementById('mobileMenu');
+                const hamburger = document.getElementById('hamburger');
+                const backdrop = document.getElementById('mobileBackdrop');
+                
+                if (mobileMenu && mobileMenu.classList.contains('show')) {
+                    mobileMenu.classList.remove('show');
+                    hamburger.classList.remove('active');
+                    backdrop.classList.remove('show');
+                    document.body.style.overflow = '';
+                }
+            }
+        });
+
+        // Initialize: Show hamburger on mobile, hide on desktop
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            if (window.innerWidth <= 930) {
+                hamburger.style.display = 'flex';
+            } else {
+                hamburger.style.display = 'none';
             }
         });
     </script>
