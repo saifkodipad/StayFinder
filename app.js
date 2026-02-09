@@ -1469,24 +1469,118 @@ app.get('/admin/users/:id', isLoggedIn, isAdmin, async (req, res) => {
 
 // ==================== EMAIL ROUTE ====================
 
-// Create transporter for email
+// ==================== EMAIL ROUTE ====================
+
+// Create transporter for email with enhanced error handling
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
+        user: process.env.EMAIL_USER || 'not-set@gmail.com',
+        pass: process.env.EMAIL_PASS || 'not-set'
+    },
+    debug: true, // Enable debug output
+    logger: true  // Log to console
 });
 
-// Email sending endpoint - SIMPLIFIED
+// Email sending endpoint - ENHANCED ERROR HANDLING
 app.post('/api/send-email', async (req, res) => {
+    console.log('📧 Email endpoint hit at:', new Date().toISOString());
+    
     try {
+        // ========== 1. VALIDATE INPUT ==========
+        console.log('🔍 Step 1: Validating input...');
         const { senderEmail, emailSubject, emailMessage } = req.body;
-
-        // Email to yourself (admin)
+        
+        if (!senderEmail || !emailSubject || !emailMessage) {
+            console.error('❌ Missing fields:', { 
+                senderEmail: !!senderEmail, 
+                emailSubject: !!emailSubject, 
+                emailMessage: !!emailMessage 
+            });
+            return res.status(400).json({ 
+                success: false, 
+                error: 'All fields are required: senderEmail, emailSubject, emailMessage' 
+            });
+        }
+        
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(senderEmail)) {
+            console.error('❌ Invalid email format:', senderEmail);
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Please provide a valid email address' 
+            });
+        }
+        
+        console.log('✅ Input validation passed');
+        
+        // ========== 2. CHECK ENVIRONMENT VARIABLES ==========
+        console.log('🔍 Step 2: Checking environment variables...');
+        const emailUser = process.env.EMAIL_USER;
+        const emailPass = process.env.EMAIL_PASS;
+        
+        if (!emailUser || !emailPass) {
+            console.error('❌ Environment variables missing:', {
+                EMAIL_USER: emailUser ? 'SET' : 'NOT SET',
+                EMAIL_PASS: emailPass ? 'SET' : 'NOT SET'
+            });
+            
+            // Detailed error for debugging
+            let errorMsg = 'Email service not configured. ';
+            if (!emailUser && !emailPass) {
+                errorMsg += 'EMAIL_USER and EMAIL_PASS are not set in environment variables.';
+            } else if (!emailUser) {
+                errorMsg += 'EMAIL_USER is not set.';
+            } else {
+                errorMsg += 'EMAIL_PASS is not set.';
+            }
+            
+            return res.status(500).json({ 
+                success: false, 
+                error: errorMsg,
+                debug: process.env.NODE_ENV === 'development' ? 'Check server environment variables' : undefined
+            });
+        }
+        
+        console.log('✅ Environment variables present');
+        
+        // ========== 3. TEST SMTP CONNECTION ==========
+        console.log('🔍 Step 3: Testing SMTP connection...');
+        try {
+            await transporter.verify();
+            console.log('✅ SMTP connection verified');
+        } catch (smtpError) {
+            console.error('❌ SMTP connection failed:', {
+                name: smtpError.name,
+                message: smtpError.message,
+                code: smtpError.code,
+                command: smtpError.command
+            });
+            
+            let userMessage = 'Email service temporarily unavailable. ';
+            
+            // Provide specific guidance based on error
+            if (smtpError.code === 'EAUTH') {
+                userMessage += 'Authentication failed. Please check email credentials.';
+            } else if (smtpError.code === 'ECONNECTION') {
+                userMessage += 'Cannot connect to email server.';
+            } else if (smtpError.code === 'ETIMEDOUT') {
+                userMessage += 'Email server connection timeout.';
+            }
+            
+            return res.status(500).json({ 
+                success: false, 
+                error: userMessage,
+                debug: process.env.NODE_ENV === 'development' ? smtpError.message : undefined
+            });
+        }
+        
+        // ========== 4. PREPARE AND SEND EMAIL ==========
+        console.log('🔍 Step 4: Preparing email...');
         const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: 'rahamansaiif029@gmail.com', // Your email
+            from: `"StayFinder" <${emailUser}>`,
+            to: 'rahamansaiif029@gmail.com',
             replyTo: senderEmail,
             subject: `StayFinder Contact: ${emailSubject}`,
             html: `
@@ -1501,28 +1595,96 @@ app.post('/api/send-email', async (req, res) => {
                     </div>
                     <hr style="border: 1px solid #e5e7eb;">
                     <p style="color: #6b7280; font-size: 12px;">
-                        This email was sent from StayFinder contact form.
+                        This email was sent from StayFinder contact form at ${new Date().toLocaleString()}.
                     </p>
                 </div>
-            `
+            `,
+            // Add text version for email clients that don't support HTML
+            text: `New contact form submission:\n\nFrom: ${senderEmail}\nSubject: ${emailSubject}\n\nMessage:\n${emailMessage}\n\nSent from StayFinder contact form.`
         };
-
-        await transporter.sendMail(mailOptions);
         
+        console.log('📤 Sending email...');
+        const info = await transporter.sendMail(mailOptions);
+        
+        console.log('✅ Email sent successfully:', {
+            messageId: info.messageId,
+            response: info.response,
+            accepted: info.accepted,
+            rejected: info.rejected
+        });
+        
+        // ========== 5. SEND SUCCESS RESPONSE ==========
         res.json({ 
             success: true, 
-            message: 'Message sent successfully! We will respond within 24 hours.' 
+            message: 'Message sent successfully! We will respond within 24 hours.',
+            timestamp: new Date().toISOString()
         });
         
     } catch (err) {
-        console.error('Email sending error:', err);
+        console.error('💥 UNEXPECTED EMAIL ERROR:', {
+            name: err.name,
+            message: err.message,
+            code: err.code,
+            stack: err.stack,
+            requestBody: req.body,
+            envStatus: {
+                EMAIL_USER: process.env.EMAIL_USER ? 'SET' : 'NOT SET',
+                EMAIL_PASS: process.env.EMAIL_PASS ? 'SET' : 'NOT SET',
+                NODE_ENV: process.env.NODE_ENV
+            }
+        });
+        
+        // Determine user-friendly error message
+        let userErrorMessage = 'Failed to send message. Please try again.';
+        
+        if (process.env.NODE_ENV === 'development') {
+            userErrorMessage += ` Error: ${err.message}`;
+        }
+        
         res.status(500).json({ 
             success: false, 
-            error: 'Failed to send message. Please try again.' 
+            error: userErrorMessage,
+            // Only send debug info in development
+            ...(process.env.NODE_ENV === 'development' && {
+                debug: {
+                    error: err.message,
+                    code: err.code,
+                    suggestion: 'Check server logs for details'
+                }
+            })
         });
+    } finally {
+        console.log('🏁 Email request completed at:', new Date().toISOString());
     }
 });
 
+// ==================== TEST ENDPOINT ====================
+// Add this to test if your server is working
+app.get('/api/email-status', (req, res) => {
+    const status = {
+        serverTime: new Date().toISOString(),
+        emailConfigured: !!(process.env.EMAIL_USER && process.env.EMAIL_PASS),
+        environment: process.env.NODE_ENV || 'not set',
+        hostname: require('os').hostname()
+    };
+    
+    console.log('📊 Email status check:', status);
+    
+    res.json({
+        success: true,
+        message: 'Email service status',
+        data: status
+    });
+});
+
+// ==================== HEALTH CHECK ====================
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        status: 'OK', 
+        timestamp: new Date().toISOString(),
+        service: 'StayFinder Email API'
+    });
+});
 // ==================== ERROR HANDLERS ====================
 
 // 404 handler
